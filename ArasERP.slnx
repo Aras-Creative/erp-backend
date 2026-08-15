@@ -9,6 +9,7 @@
   <Folder Name="/src/Modules/Inventory/">
     <Project Path="src/Modules/Inventory/ArasERP.Modules.Inventory/ArasERP.Modules.Inventory.csproj" />
     <Project Path="src/Modules/Inventory/ArasERP.Modules.Inventory.Api/ArasERP.Modules.Inventory.Api.csproj" />
+    <Project Path="src/Modules/Inventory/ArasERP.Modules.Inventory.Contracts/ArasERP.Modules.Inventory.Contracts.csproj" />
     <Project Path="src/Modules/Inventory/ArasERP.Modules.Inventory.Infrastructure/ArasERP.Modules.Inventory.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">

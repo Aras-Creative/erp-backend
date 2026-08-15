@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\ArasERP.BuildingBlocks\ArasERP.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\ArasERP.Modules.Inventory.Contracts\ArasERP.Modules.Inventory.Contracts.csproj" />
     <ProjectReference Include="..\ArasERP.Modules.Inventory\ArasERP.Modules.Inventory.csproj" />
   </ItemGroup>
 </Project>

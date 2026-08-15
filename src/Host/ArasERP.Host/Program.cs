@@ -4,6 +4,7 @@ using ArasERP.Modules.Inventory.Infrastructure;
 using ArasERP.Modules.Inventory.Infrastructure.Persistence;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 
     using (var scope = app.Services.CreateScope())
     {

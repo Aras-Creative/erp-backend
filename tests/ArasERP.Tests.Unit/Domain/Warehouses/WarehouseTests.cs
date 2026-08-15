@@ -95,9 +95,7 @@ public class WarehouseTests
 
         warehouse.IsDeleted.Should().BeTrue();
         warehouse.DeletedAtUtc.Should().NotBeNull();
-        warehouse
-            .DomainEvents.Should()
-            .ContainSingle(e => e is WarehouseDeletedDomainEvent);
+        warehouse.DomainEvents.Should().ContainSingle(e => e is WarehouseDeletedDomainEvent);
     }
 
     [Fact]
