@@ -38,7 +38,7 @@ public static class DependencyInjection
         >();
 
         services.AddScoped<
-            IQueryHandler<ListWarehousesQuery, IReadOnlyList<WarehouseListItemDto>>,
+            IQueryHandler<ListWarehousesQuery, PagedList<WarehouseListItemDto>>,
             ListWarehousesQueryHandler
         >();
 

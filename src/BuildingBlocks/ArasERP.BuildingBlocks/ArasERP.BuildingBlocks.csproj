@@ -4,5 +4,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ArasERP.BuildingBlocks</RootNamespace>
+    <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>

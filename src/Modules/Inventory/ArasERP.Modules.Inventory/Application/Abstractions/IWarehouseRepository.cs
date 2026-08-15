@@ -1,3 +1,4 @@
+using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetOptions;
 using ArasERP.Modules.Inventory.Application.Warehouses.List;
@@ -17,7 +18,9 @@ public interface IWarehouseRepository
         Guid warehouseId,
         CancellationToken cancellationToken = default
     );
-    Task<IReadOnlyList<WarehouseListItemDto>> GetAllAsync(
+    Task<PagedList<WarehouseListItemDto>> GetPagedAsync(
+        int page,
+        int pageSize,
         CancellationToken cancellationToken = default
     );
     Task<IReadOnlyList<WarehouseOptionDto>> GetOptionsAsync(

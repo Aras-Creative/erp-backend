@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetOptions;
@@ -70,18 +71,28 @@ public sealed class WarehouseRepository : IWarehouseRepository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<WarehouseListItemDto>> GetAllAsync(
+    public async Task<PagedList<WarehouseListItemDto>> GetPagedAsync(
+        int page,
+        int pageSize,
         CancellationToken cancellationToken = default
     )
     {
-        return (
-            await _dbContext
-                .Warehouses.OrderBy(w => w.Name)
-                .Select(WarehouseDetailProjection)
-                .ToListAsync(cancellationToken)
-        )
-            .Select(WarehouseListItemDto.FromDetail)
-            .ToList();
+        var query = _dbContext.Warehouses.OrderBy(w => w.Name);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(WarehouseDetailProjection)
+            .ToListAsync(cancellationToken);
+
+        return new PagedList<WarehouseListItemDto>(
+            items.Select(WarehouseListItemDto.FromDetail).ToList(),
+            page,
+            pageSize,
+            totalCount
+        );
     }
 
     public async Task<IReadOnlyList<WarehouseOptionDto>> GetOptionsAsync(

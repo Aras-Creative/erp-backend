@@ -1,8 +1,8 @@
+using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Application.Warehouses.Create;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using FluentAssertions;
-using FluentValidation;
 using NSubstitute;
 
 namespace ArasERP.Tests.Unit.Application.Warehouses;
@@ -121,9 +121,7 @@ public class CreateWarehouseCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         var exception = await act.Should().ThrowAsync<ValidationException>();
-        exception
-            .Which.Errors.Should()
-            .ContainSingle(e => e.PropertyName == nameof(CreateWarehouseCommand.Name));
+        exception.Which.Errors.Should().ContainSingle(e => e.Contains("already exists"));
         await _repository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
     }
 }
