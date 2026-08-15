@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ArasERP.Host</RootNamespace>
+    <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.16.20" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Modules\Inventory\ArasERP.Modules.Inventory\ArasERP.Modules.Inventory.csproj" />
+    <ProjectReference Include="..\..\Modules\Inventory\ArasERP.Modules.Inventory.Api\ArasERP.Modules.Inventory.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Inventory\ArasERP.Modules.Inventory.Infrastructure\ArasERP.Modules.Inventory.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

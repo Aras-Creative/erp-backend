@@ -1,0 +1,6 @@
+@ArasERP_HostAddress = http://localhost:5178
+
+GET {{ArasERP_HostAddress}}/health
+Accept: application/json
+
+###

@@ -1,0 +1,17 @@
+bin/
+obj/
+*.user
+.vs/
+.idea/
+*.userprefs
+*.suo
+*.nupkg
+*.snupkg
+*.[Cc]ache
+artifacts/
+TestResults/
+*.log
+build/
+*.db
+*.db-shm
+*.db-wal

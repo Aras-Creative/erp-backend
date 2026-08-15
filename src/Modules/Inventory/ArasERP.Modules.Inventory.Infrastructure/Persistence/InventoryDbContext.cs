@@ -1,0 +1,17 @@
+using ArasERP.Modules.Inventory.Domain.Warehouses;
+using Microsoft.EntityFrameworkCore;
+
+namespace ArasERP.Modules.Inventory.Infrastructure.Persistence;
+
+public sealed class InventoryDbContext : DbContext
+{
+    public InventoryDbContext(DbContextOptions<InventoryDbContext> options)
+        : base(options) { }
+
+    public DbSet<Warehouse> Warehouses => Set<Warehouse>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(InventoryDbContext).Assembly);
+    }
+}
