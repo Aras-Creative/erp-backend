@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace ArasERP.Integrations.Application;
+namespace ArasERP.Modules.Address.Application;
 
 public sealed class KeywordFetchLock
 {
@@ -9,8 +9,7 @@ public sealed class KeywordFetchLock
     public async Task<IDisposable?> TryAcquireAsync(
         string keyword,
         TimeSpan timeout,
-        CancellationToken cancellationToken = default
-    )
+        CancellationToken cancellationToken = default)
     {
         var semaphore = _locks.GetOrAdd(keyword, _ => new SemaphoreSlim(1, 1));
 

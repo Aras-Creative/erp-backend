@@ -1,5 +1,6 @@
 using ArasERP.BuildingBlocks.Application;
 using ArasERP.BuildingBlocks.Presentation;
+using ArasERP.Modules.Address.Application.Addresses.Search;
 using ArasERP.Modules.Address.Contracts.Addresses;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -21,13 +22,13 @@ public static class AddressesEndpoints
 
     private static async Task<Ok<ApiResponse<IReadOnlyList<AddressSearchResultItemDto>>>> SearchAddresses(
         HttpContext context,
-        IAddressSearchFallbackService searchService,
+        IMediator mediator,
         CancellationToken cancellationToken,
         string keyword,
-        int limit = PaginationDefaults.MaxPageSize
-    )
+        int limit = PaginationDefaults.MaxPageSize)
     {
-        var results = await searchService.SearchAsync(keyword, limit, cancellationToken);
+        var query = new SearchAddressesQuery { Keyword = keyword, Limit = limit };
+        var results = await mediator.SendAsync<SearchAddressesQuery, IReadOnlyList<AddressSearchResultItemDto>>(query, cancellationToken);
 
         return TypedResults.Ok(ApiResponse.Success(context, results));
     }

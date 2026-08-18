@@ -1,29 +1,23 @@
-using ArasERP.Integrations.Abstractions;
-using ArasERP.Integrations.Application;
-using ArasERP.Integrations.Application.AddressSync;
+using ArasERP.Integrations.Mengantar;
 using ArasERP.Integrations.Options;
-using ArasERP.Modules.Address.Contracts.Addresses;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ArasERP.Integrations;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddIntegrations(this IServiceCollection services)
+    public static IServiceCollection AddIntegrations(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        services.AddSingleton<IKeywordSyncStateCache, InMemoryKeywordSyncStateCache>();
-        services.AddSingleton<KeywordFetchLock>();
+        services.Configure<IntegrationsOptions>(
+            configuration.GetSection(IntegrationsOptions.SectionName));
 
-        services.AddScoped<IShippingProviderFactory, ShippingProviderFactory>();
-        services.AddScoped<AddressSyncService>();
-        services.AddScoped<IAddressSearchFallbackService, AddressSearchFallbackService>();
-
-        services.AddHostedService<ProvinceSeedBackgroundService>();
-
-        services.AddOptions<AddressSyncOptions>()
-            .BindConfiguration("Integrations:AddressSync")
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        services.AddHttpClient<MengantarClient>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
 
         return services;
     }

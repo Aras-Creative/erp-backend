@@ -1,11 +1,12 @@
-using ArasERP.Integrations.Application.AddressSync;
-using ArasERP.Integrations.Options;
+using ArasERP.Modules.Address.Application;
+using ArasERP.Modules.Address.Application.Addresses.Sync;
+using ArasERP.Modules.Address.Application.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace ArasERP.Integrations.Application;
+namespace ArasERP.Modules.Address.Infrastructure.BackgroundServices;
 
 public sealed class ProvinceSeedBackgroundService : BackgroundService
 {
@@ -60,8 +61,7 @@ public sealed class ProvinceSeedBackgroundService : BackgroundService
         ILogger<ProvinceSeedBackgroundService> logger,
         IOptions<AddressSyncOptions> options,
         IServiceProvider serviceProvider,
-        KeywordFetchLock fetchLock
-    )
+        KeywordFetchLock fetchLock)
     {
         _logger = logger;
         _options = options;
@@ -77,8 +77,7 @@ public sealed class ProvinceSeedBackgroundService : BackgroundService
         _logger.LogInformation(
             "Province seed service started. Interval: {IntervalMinutes}m, Keywords: {Count}",
             _options.Value.IntervalMinutes,
-            ProvinceKeywords.Length
-        );
+            ProvinceKeywords.Length);
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
@@ -123,20 +122,17 @@ public sealed class ProvinceSeedBackgroundService : BackgroundService
             "Province seed cycle completed. Processed: {Processed}, Skipped: {Skipped}, Failed: {Failed}",
             processedCount,
             skippedCount,
-            failedCount
-        );
+            failedCount);
     }
 
     private async Task<SeedResult> SeedKeywordAsync(
         string keyword,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         using var lockHandle = await _fetchLock.TryAcquireAsync(
             keyword,
             TimeSpan.FromSeconds(2),
-            cancellationToken
-        );
+            cancellationToken);
 
         if (lockHandle is null)
         {
@@ -152,11 +148,7 @@ public sealed class ProvinceSeedBackgroundService : BackgroundService
             using var scope = _serviceProvider.CreateScope();
             var syncService = scope.ServiceProvider.GetRequiredService<AddressSyncService>();
 
-            var result = await syncService.SyncAsync(
-                _options.Value.Provider,
-                keyword,
-                timeoutCts.Token
-            );
+            var result = await syncService.SyncAsync(keyword, timeoutCts.Token);
 
             if (result.NotModified)
             {
@@ -167,8 +159,7 @@ public sealed class ProvinceSeedBackgroundService : BackgroundService
             _logger.LogInformation(
                 "Keyword '{Keyword}' — synced {Count} records",
                 keyword,
-                result.ProcessedCount
-            );
+                result.ProcessedCount);
 
             return SeedResult.Processed;
         }

@@ -1,4 +1,4 @@
-namespace ArasERP.Integrations.Abstractions;
+namespace ArasERP.Modules.Address.Application.Abstractions;
 
 public interface IKeywordSyncStateCache
 {

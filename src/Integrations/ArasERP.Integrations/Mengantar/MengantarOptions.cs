@@ -1,4 +1,4 @@
-namespace ArasERP.Integrations.Infrastructure.Providers.Mengantar;
+namespace ArasERP.Integrations.Mengantar;
 
 public sealed class MengantarOptions
 {

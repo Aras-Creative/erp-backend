@@ -11,8 +11,6 @@ using ArasERP.Modules.Address.Api.Endpoints;
 using ArasERP.Modules.Address.Infrastructure;
 using ArasERP.Modules.Address.Infrastructure.Persistence;
 using ArasERP.Integrations;
-using ArasERP.Integrations.Api.Endpoints;
-using ArasERP.Integrations.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,13 +19,13 @@ builder.Services.AddMediator();
 builder.Services.AddInventoryModule();
 builder.Services.AddAddressModule();
 builder.Services.AddAddressInfrastructure(
-    builder.Configuration.GetConnectionString("DefaultConnection")!
+    builder.Configuration.GetConnectionString("DefaultConnection")!,
+    builder.Configuration
 );
 builder.Services.AddInventoryInfrastructure(
     builder.Configuration.GetConnectionString("DefaultConnection")!
 );
-builder.Services.AddIntegrations();
-builder.Services.AddIntegrationsInfrastructure(builder.Configuration);
+builder.Services.AddIntegrations(builder.Configuration);
 
 var app = builder.Build();
 
@@ -56,6 +54,5 @@ app.MapGet("/health", () => Results.Ok(new { Status = "Healthy" }));
 
 app.MapWarehouseEndpoints();
 app.MapAddressEndpoints();
-app.MapIntegrationsEndpoints();
 
 app.Run();

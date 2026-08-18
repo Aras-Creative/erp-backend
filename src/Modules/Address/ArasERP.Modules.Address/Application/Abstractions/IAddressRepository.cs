@@ -18,7 +18,7 @@ public interface IAddressRepository
         CancellationToken cancellationToken = default
     );
     Task UpsertRangeAsync(
-        IReadOnlyCollection<AddressSyncItem> items,
+        IReadOnlyCollection<Domain.Address> addresses,
         CancellationToken cancellationToken = default
     );
     Task AddAsync(Domain.Address address, CancellationToken cancellationToken = default);

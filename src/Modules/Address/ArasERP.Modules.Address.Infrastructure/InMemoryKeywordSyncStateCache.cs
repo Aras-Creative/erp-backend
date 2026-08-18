@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
-using ArasERP.Integrations.Abstractions;
+using ArasERP.Modules.Address.Application.Abstractions;
 
-namespace ArasERP.Integrations.Application;
+namespace ArasERP.Modules.Address.Infrastructure;
 
 public sealed class InMemoryKeywordSyncStateCache : IKeywordSyncStateCache
 {

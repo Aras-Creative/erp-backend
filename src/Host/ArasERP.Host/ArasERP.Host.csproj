@@ -25,7 +25,5 @@
     <ProjectReference Include="..\..\Modules\Address\ArasERP.Modules.Address.Api\ArasERP.Modules.Address.Api.csproj" />
     <ProjectReference Include="..\..\Modules\Address\ArasERP.Modules.Address.Infrastructure\ArasERP.Modules.Address.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Integrations\ArasERP.Integrations\ArasERP.Integrations.csproj" />
-    <ProjectReference Include="..\..\Integrations\ArasERP.Integrations.Infrastructure\ArasERP.Integrations.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Integrations\ArasERP.Integrations.Api\ArasERP.Integrations.Api.csproj" />
   </ItemGroup>
 </Project>
