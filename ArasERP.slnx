@@ -6,11 +6,22 @@
     <Project Path="src/BuildingBlocks/ArasERP.BuildingBlocks/ArasERP.BuildingBlocks.csproj" />
   </Folder>
   <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Address/">
+    <Project Path="src/Modules/Address/ArasERP.Modules.Address.Api/ArasERP.Modules.Address.Api.csproj" />
+    <Project Path="src/Modules/Address/ArasERP.Modules.Address.Contracts/ArasERP.Modules.Address.Contracts.csproj" />
+    <Project Path="src/Modules/Address/ArasERP.Modules.Address.Infrastructure/ArasERP.Modules.Address.Infrastructure.csproj" />
+    <Project Path="src/Modules/Address/ArasERP.Modules.Address/ArasERP.Modules.Address.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Inventory/">
     <Project Path="src/Modules/Inventory/ArasERP.Modules.Inventory/ArasERP.Modules.Inventory.csproj" />
     <Project Path="src/Modules/Inventory/ArasERP.Modules.Inventory.Api/ArasERP.Modules.Inventory.Api.csproj" />
     <Project Path="src/Modules/Inventory/ArasERP.Modules.Inventory.Contracts/ArasERP.Modules.Inventory.Contracts.csproj" />
     <Project Path="src/Modules/Inventory/ArasERP.Modules.Inventory.Infrastructure/ArasERP.Modules.Inventory.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Integrations/">
+    <Project Path="src/Integrations/ArasERP.Integrations/ArasERP.Integrations.csproj" />
+    <Project Path="src/Integrations/ArasERP.Integrations.Infrastructure/ArasERP.Integrations.Infrastructure.csproj" />
+    <Project Path="src/Integrations/ArasERP.Integrations.Api/ArasERP.Integrations.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ArasERP.Tests.Unit/ArasERP.Tests.Unit.csproj" />
