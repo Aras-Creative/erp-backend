@@ -11,7 +11,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddIntegrations(this IServiceCollection services)
     {
-        services.AddSingleton<IKeywordEtagCache, InMemoryKeywordEtagCache>();
+        services.AddSingleton<IKeywordSyncStateCache, InMemoryKeywordSyncStateCache>();
         services.AddSingleton<KeywordFetchLock>();
 
         services.AddScoped<IShippingProviderFactory, ShippingProviderFactory>();

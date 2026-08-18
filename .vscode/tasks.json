@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "run",
+      "type": "shell",
+      "command": "dotnet run",
+      "options": { "cwd": "${workspaceFolder}/src/Host/ArasERP.Host" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "migrate:address",
+      "type": "shell",
+      "command": "dotnet ef database update --project src/Modules/Address/ArasERP.Modules.Address.Infrastructure --startup-project src/Host/ArasERP.Host --context AddressDbContext",
+      "options": { "cwd": "${workspaceFolder}" }
+    },
+    {
+      "label": "migrate:inventory",
+      "type": "shell",
+      "command": "dotnet ef database update --project src/Modules/Inventory/ArasERP.Modules.Inventory.Infrastructure --startup-project src/Host/ArasERP.Host --context InventoryDbContext",
+      "options": { "cwd": "${workspaceFolder}" }
+    }
+  ]
+}

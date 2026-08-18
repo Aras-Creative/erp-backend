@@ -14,17 +14,17 @@ public sealed class AddressSyncService
 
     private readonly IAddressWriter _addressWriter;
 
-    private readonly IKeywordEtagCache _etagCache;
+    private readonly IKeywordSyncStateCache _syncStateCache;
 
     public AddressSyncService(
         IShippingProviderFactory providerFactory,
         IAddressWriter addressWriter,
-        IKeywordEtagCache etagCache
+        IKeywordSyncStateCache syncStateCache
     )
     {
         _providerFactory = providerFactory;
         _addressWriter = addressWriter;
-        _etagCache = etagCache;
+        _syncStateCache = syncStateCache;
     }
 
     public async Task<AddressSyncResult> SyncAsync(
@@ -40,11 +40,13 @@ public sealed class AddressSyncService
         }
 
         var provider = _providerFactory.Get(providerName);
-        var etag = _etagCache.Get(provider.Name, keyword);
+        var state = _syncStateCache.Get(provider.Name, keyword);
+        var etag = state?.ETag;
         var result = await provider.SearchAddressesAsync(keyword, etag, cancellationToken);
 
         if (result.NotModified)
         {
+            _syncStateCache.Set(provider.Name, keyword, etag, DateTimeOffset.UtcNow);
             return new AddressSyncResult(keyword, 0, true);
         }
 
@@ -66,10 +68,8 @@ public sealed class AddressSyncService
 
         await _addressWriter.UpsertAsync(items, cancellationToken);
 
-        if (!string.IsNullOrWhiteSpace(result.Etag))
-        {
-            _etagCache.Set(provider.Name, keyword, result.Etag);
-        }
+        var newEtag = !string.IsNullOrWhiteSpace(result.Etag) ? result.Etag : etag;
+        _syncStateCache.Set(provider.Name, keyword, newEtag, DateTimeOffset.UtcNow);
 
         return new AddressSyncResult(keyword, result.Items.Count, false);
     }

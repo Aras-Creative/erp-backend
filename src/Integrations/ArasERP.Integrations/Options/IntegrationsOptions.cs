@@ -27,4 +27,8 @@ public sealed class AddressSyncOptions
     public int TimeoutPerKeywordSeconds { get; init; } = 15;
 
     public int FallbackTimeoutSeconds { get; init; } = 15;
+
+    public int FreshnessCheckTimeoutSeconds { get; init; } = 3;
+
+    public int FreshnessTtlSeconds { get; init; } = 3600;
 }

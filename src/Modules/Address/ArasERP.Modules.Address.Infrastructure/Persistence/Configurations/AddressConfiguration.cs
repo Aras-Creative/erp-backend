@@ -12,7 +12,7 @@ internal sealed class AddressConfiguration : IEntityTypeConfiguration<Domain.Add
 
         builder.HasKey(a => a.Id);
 
-        builder.Property(a => a.Id).HasConversion(id => id.Value, value => new Domain.AddressId(value));
+        builder.Property(a => a.Id).HasColumnName("id").HasConversion(id => id.Value, value => new Domain.AddressId(value));
 
         builder.Property(a => a.DestinationCode).HasColumnName("destination_code").IsRequired().HasMaxLength(20);
 
