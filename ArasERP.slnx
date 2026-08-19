@@ -2,6 +2,8 @@
   <Folder Name="/src/Host/">
     <Project Path="src/Host/ArasERP.Host/ArasERP.Host.csproj" />
   </Folder>
+  <Folder Name="/Docs/" />
+  <Folder Name="/src/" />
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/ArasERP.BuildingBlocks/ArasERP.BuildingBlocks.csproj" />
   </Folder>
