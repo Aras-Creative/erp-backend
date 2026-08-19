@@ -1,9 +1,9 @@
 using ArasERP.BuildingBlocks.Application;
-using ArasERP.Modules.Address.Contracts.Addresses;
+using ArasERP.Modules.Address.Domain;
 
 namespace ArasERP.Modules.Address.Application.Addresses.Search;
 
-public sealed class SearchAddressesQuery : IQuery<IReadOnlyList<AddressSearchResultItemDto>>
+public sealed class SearchAddressesQuery : IQuery<IReadOnlyList<Domain.Address>>
 {
     public string Keyword { get; init; } = null!;
 

@@ -1,7 +1,6 @@
 using ArasERP.Modules.Address.Application.Abstractions;
 using ArasERP.Modules.Address.Application.Addresses.Search;
 using ArasERP.Modules.Address.Application.Sync;
-using ArasERP.Modules.Address.Contracts.Addresses;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -112,23 +111,20 @@ public class SearchAddressesQueryHandlerTests
         result.Should().HaveCount(1);
     }
 
-    private static IReadOnlyList<AddressSearchResultItemDto> CreateEmptyResults() => [];
+    private static IReadOnlyList<ArasERP.Modules.Address.Domain.Address> CreateEmptyResults() => [];
 
-    private static IReadOnlyList<AddressSearchResultItemDto> CreateSingleResult()
+    private static IReadOnlyList<ArasERP.Modules.Address.Domain.Address> CreateSingleResult()
     {
         return
         [
-            new AddressSearchResultItemDto
-            {
-                AddressId = Guid.NewGuid(),
-                DestinationCode = "DJJ20411",
-                OriginCode = "DJJ20400",
-                ProvinceName = "PAPUA",
-                CityName = "MERAUKE",
-                DistrictName = "MUTING",
-                SubDistrictName = "SEED AGUNG",
-                ZipCode = "99652",
-            },
+            ArasERP.Modules.Address.Domain.Address.Create(
+                destinationCode: "DJJ20411",
+                originCode: "DJJ20400",
+                provinceName: "PAPUA",
+                cityName: "MERAUKE",
+                districtName: "MUTING",
+                subDistrictName: "SEED AGUNG",
+                zipCode: "99652"),
         ];
     }
 }

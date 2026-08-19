@@ -1,5 +1,3 @@
-using ArasERP.Modules.Address.Contracts.Addresses;
-
 namespace ArasERP.Modules.Address.Application.Abstractions;
 
 public interface IAddressRepository
@@ -12,7 +10,7 @@ public interface IAddressRepository
         IReadOnlyCollection<(string DestinationCode, string OriginCode)> codePairs,
         CancellationToken cancellationToken = default
     );
-    Task<IReadOnlyList<AddressSearchResultItemDto>> SearchAsync(
+    Task<IReadOnlyList<Domain.Address>> SearchAsync(
         string keyword,
         int limit,
         CancellationToken cancellationToken = default

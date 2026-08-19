@@ -10,7 +10,6 @@
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/Address/">
     <Project Path="src/Modules/Address/ArasERP.Modules.Address.Api/ArasERP.Modules.Address.Api.csproj" />
-    <Project Path="src/Modules/Address/ArasERP.Modules.Address.Contracts/ArasERP.Modules.Address.Contracts.csproj" />
     <Project Path="src/Modules/Address/ArasERP.Modules.Address.Infrastructure/ArasERP.Modules.Address.Infrastructure.csproj" />
     <Project Path="src/Modules/Address/ArasERP.Modules.Address/ArasERP.Modules.Address.csproj" />
   </Folder>
