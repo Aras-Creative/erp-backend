@@ -1,8 +1,6 @@
-using ArasERP.Modules.Address.Application;
 using ArasERP.Modules.Address.Application.Abstractions;
 using ArasERP.Modules.Address.Application.Addresses.Search;
-using ArasERP.Modules.Address.Application.Addresses.Sync;
-using ArasERP.Modules.Address.Application.Options;
+using ArasERP.Modules.Address.Application.Sync;
 using ArasERP.Modules.Address.Contracts.Addresses;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -15,16 +13,16 @@ public class SearchAddressesQueryHandlerTests
 {
     private readonly IAddressRepository _repository;
     private readonly IKeywordSyncStateCache _syncStateCache;
-    private readonly KeywordFetchLock _fetchLock;
+    private readonly AddressKeywordFetchLock _fetchLock;
     private readonly IOptions<AddressSyncOptions> _options;
     private readonly SearchAddressesQueryHandler _sut;
-    private readonly AddressSyncService _syncService;
+    private readonly AddressSyncerService _syncService;
 
     public SearchAddressesQueryHandlerTests()
     {
         _repository = Substitute.For<IAddressRepository>();
         _syncStateCache = Substitute.For<IKeywordSyncStateCache>();
-        _fetchLock = new KeywordFetchLock();
+        _fetchLock = new AddressKeywordFetchLock();
         _options = Options.Create(new AddressSyncOptions
         {
             Provider = "mengantar",
@@ -33,12 +31,11 @@ public class SearchAddressesQueryHandlerTests
             FallbackTimeoutSeconds = 15,
         });
 
-        _syncService = new AddressSyncService(
+        _syncService = new AddressSyncerService(
             Substitute.For<IAddressProvider>(),
             _repository,
             _syncStateCache,
-            _options,
-            Substitute.For<ILogger<AddressSyncService>>());
+            _options);
 
         _sut = new SearchAddressesQueryHandler(
             _repository,

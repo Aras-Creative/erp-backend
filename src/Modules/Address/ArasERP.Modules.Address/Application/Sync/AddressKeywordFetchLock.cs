@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 
-namespace ArasERP.Modules.Address.Application;
+namespace ArasERP.Modules.Address.Application.Sync;
 
-public sealed class KeywordFetchLock
+public class AddressKeywordFetchLock
 {
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = new();
 
@@ -14,12 +14,7 @@ public sealed class KeywordFetchLock
         var semaphore = _locks.GetOrAdd(keyword, _ => new SemaphoreSlim(1, 1));
 
         var acquired = await semaphore.WaitAsync(timeout, cancellationToken);
-        if (!acquired)
-        {
-            return null;
-        }
-
-        return new LockRelease(semaphore, keyword, this);
+        return !acquired ? null : new LockRelease(semaphore, keyword, this);
     }
 
     private void Release(string keyword, SemaphoreSlim semaphore)
@@ -28,19 +23,10 @@ public sealed class KeywordFetchLock
         _locks.TryRemove(keyword, out _);
     }
 
-    private sealed class LockRelease : IDisposable
+    private sealed class LockRelease(SemaphoreSlim semaphore, string keyword, AddressKeywordFetchLock owner)
+        : IDisposable
     {
-        private readonly SemaphoreSlim _semaphore;
-        private readonly string _keyword;
-        private readonly KeywordFetchLock _owner;
         private bool _disposed;
-
-        public LockRelease(SemaphoreSlim semaphore, string keyword, KeywordFetchLock owner)
-        {
-            _semaphore = semaphore;
-            _keyword = keyword;
-            _owner = owner;
-        }
 
         public void Dispose()
         {
@@ -50,7 +36,7 @@ public sealed class KeywordFetchLock
             }
 
             _disposed = true;
-            _owner.Release(_keyword, _semaphore);
+            owner.Release(keyword, semaphore);
         }
     }
 }

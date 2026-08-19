@@ -1,19 +1,16 @@
 using ArasERP.Integrations.Mengantar;
 using ArasERP.Modules.Address.Application.Abstractions;
 using ArasERP.Modules.Address.Domain;
-using Microsoft.Extensions.Logging;
 
 namespace ArasERP.Modules.Address.Infrastructure.Providers.Mengantar;
 
 internal sealed class MengantarAddressProvider : IAddressProvider
 {
     private readonly MengantarClient _client;
-    private readonly ILogger<MengantarAddressProvider> _logger;
 
-    public MengantarAddressProvider(MengantarClient client, ILogger<MengantarAddressProvider> logger)
+    public MengantarAddressProvider(MengantarClient client)
     {
         _client = client;
-        _logger = logger;
     }
 
     public async Task<AddressProviderResult> SearchAsync(string keyword, string? etag, CancellationToken ct)

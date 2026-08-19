@@ -1,4 +1,4 @@
-namespace ArasERP.Modules.Address.Application.Options;
+namespace ArasERP.Modules.Address.Application.Sync;
 
 public sealed class AddressSyncOptions
 {

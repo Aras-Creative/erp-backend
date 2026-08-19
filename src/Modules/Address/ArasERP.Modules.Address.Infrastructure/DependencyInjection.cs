@@ -1,11 +1,10 @@
 using ArasERP.Integrations;
 using ArasERP.Integrations.Mengantar;
 using ArasERP.Integrations.Options;
-using ArasERP.Modules.Address.Application;
 using ArasERP.Modules.Address.Application.Abstractions;
-using ArasERP.Modules.Address.Application.Addresses.Sync;
-using ArasERP.Modules.Address.Application.Options;
+using ArasERP.Modules.Address.Application.Sync;
 using ArasERP.Modules.Address.Infrastructure.BackgroundServices;
+using ArasERP.Modules.Address.Infrastructure.Caching;
 using ArasERP.Modules.Address.Infrastructure.Persistence;
 using ArasERP.Modules.Address.Infrastructure.Persistence.Repositories;
 using ArasERP.Modules.Address.Infrastructure.Providers.Mengantar;
@@ -36,9 +35,9 @@ public static class DependencyInjection
 
         // Address module internals
         services.AddSingleton<IKeywordSyncStateCache, InMemoryKeywordSyncStateCache>();
-        services.AddSingleton<KeywordFetchLock>();
+        services.AddSingleton<AddressKeywordFetchLock>();
         services.AddScoped<IAddressProvider, MengantarAddressProvider>();
-        services.AddScoped<AddressSyncService>();
+        services.AddScoped<AddressSyncerService>();
         services.AddHostedService<ProvinceSeedBackgroundService>();
 
         services.AddOptions<AddressSyncOptions>()
