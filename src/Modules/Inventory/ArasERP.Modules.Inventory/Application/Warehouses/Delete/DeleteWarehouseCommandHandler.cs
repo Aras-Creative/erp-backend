@@ -2,7 +2,7 @@ using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using FluentValidation;
-using FluentValidation.Results;
+using ValidationException = ArasERP.BuildingBlocks.Application.ValidationException;
 
 namespace ArasERP.Modules.Inventory.Application.Warehouses.Delete;
 
@@ -28,7 +28,9 @@ public sealed class DeleteWarehouseCommandHandler : ICommandHandler<DeleteWareho
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
         {
-            throw new ValidationException(validationResult.Errors);
+            throw new ValidationException(
+                validationResult.Errors.Select(e => e.ErrorMessage).ToList()
+            );
         }
 
         var warehouseId = new WarehouseId(Guid.Parse(command.WarehouseId));
@@ -36,13 +38,7 @@ public sealed class DeleteWarehouseCommandHandler : ICommandHandler<DeleteWareho
         var warehouse =
             await _warehouseRepository.GetByIdAsync(warehouseId, cancellationToken)
             ?? throw new ValidationException(
-                new[]
-                {
-                    new ValidationFailure(
-                        nameof(DeleteWarehouseCommand.WarehouseId),
-                        $"Warehouse with id '{command.WarehouseId}' was not found."
-                    ),
-                }
+                $"Warehouse with id '{command.WarehouseId}' was not found."
             );
 
         warehouse.Delete();

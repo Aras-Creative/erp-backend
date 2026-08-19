@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ArasERP.Modules.Address.Api</RootNamespace>
+    <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\ArasERP.BuildingBlocks\ArasERP.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\ArasERP.Modules.Address.Contracts\ArasERP.Modules.Address.Contracts.csproj" />
+    <ProjectReference Include="..\ArasERP.Modules.Address\ArasERP.Modules.Address.csproj" />
+  </ItemGroup>
+</Project>

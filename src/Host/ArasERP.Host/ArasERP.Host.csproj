@@ -5,10 +5,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ArasERP.Host</RootNamespace>
     <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
+    <MSBuildNodeReuse>false</MSBuildNodeReuse>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Scalar.AspNetCore" Version="2.16.20" />
   </ItemGroup>
 
@@ -16,5 +21,9 @@
     <ProjectReference Include="..\..\Modules\Inventory\ArasERP.Modules.Inventory\ArasERP.Modules.Inventory.csproj" />
     <ProjectReference Include="..\..\Modules\Inventory\ArasERP.Modules.Inventory.Api\ArasERP.Modules.Inventory.Api.csproj" />
     <ProjectReference Include="..\..\Modules\Inventory\ArasERP.Modules.Inventory.Infrastructure\ArasERP.Modules.Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Address\ArasERP.Modules.Address\ArasERP.Modules.Address.csproj" />
+    <ProjectReference Include="..\..\Modules\Address\ArasERP.Modules.Address.Api\ArasERP.Modules.Address.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Address\ArasERP.Modules.Address.Infrastructure\ArasERP.Modules.Address.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Integrations\ArasERP.Integrations\ArasERP.Integrations.csproj" />
   </ItemGroup>
 </Project>

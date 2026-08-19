@@ -4,7 +4,7 @@ using ArasERP.Modules.Inventory.Application.Abstractions;
 namespace ArasERP.Modules.Inventory.Application.Warehouses.List;
 
 public sealed class ListWarehousesQueryHandler
-    : IQueryHandler<ListWarehousesQuery, IReadOnlyList<WarehouseListItemDto>>
+    : IQueryHandler<ListWarehousesQuery, PagedList<WarehouseListItemDto>>
 {
     private readonly IWarehouseRepository _warehouseRepository;
 
@@ -13,11 +13,15 @@ public sealed class ListWarehousesQueryHandler
         _warehouseRepository = warehouseRepository;
     }
 
-    public async Task<IReadOnlyList<WarehouseListItemDto>> Handle(
+    public async Task<PagedList<WarehouseListItemDto>> Handle(
         ListWarehousesQuery query,
         CancellationToken cancellationToken = default
     )
     {
-        return await _warehouseRepository.GetAllAsync(cancellationToken);
+        return await _warehouseRepository.GetPagedAsync(
+            query.Page,
+            query.PageSize,
+            cancellationToken
+        );
     }
 }

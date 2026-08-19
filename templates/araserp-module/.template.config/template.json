@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json.schemastore.org/dotnetcli/template",
+  "author": "ArasERP",
+  "classifications": ["ArasERP", "Module", "Web"],
+  "identity": "ArasERP.Modules.Template",
+  "name": "ArasERP Module",
+  "shortName": "araserp-module",
+  "sourceName": "Address",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "preferNameDirectory": true
+}

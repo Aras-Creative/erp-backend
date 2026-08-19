@@ -3,7 +3,7 @@ using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using ArasERP.Modules.Inventory.Domain.Warehouses.ValueObjects;
 using FluentValidation;
-using FluentValidation.Results;
+using ValidationException = ArasERP.BuildingBlocks.Application.ValidationException;
 
 namespace ArasERP.Modules.Inventory.Application.Warehouses.Create;
 
@@ -29,19 +29,15 @@ public sealed class CreateWarehouseCommandHandler : ICommandHandler<CreateWareho
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
         {
-            throw new ValidationException(validationResult.Errors);
+            throw new ValidationException(
+                validationResult.Errors.Select(e => e.ErrorMessage).ToList()
+            );
         }
 
         if (await _warehouseRepository.ExistsByNameAsync(command.Name, null, cancellationToken))
         {
             throw new ValidationException(
-                new[]
-                {
-                    new ValidationFailure(
-                        nameof(CreateWarehouseCommand.Name),
-                        $"A warehouse with name '{command.Name}' already exists."
-                    ),
-                }
+                $"A warehouse with name '{command.Name}' already exists."
             );
         }
 

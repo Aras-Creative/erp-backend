@@ -1,3 +1,4 @@
+using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetOptions;
 using ArasERP.Modules.Inventory.Application.Warehouses.List;
@@ -7,6 +8,10 @@ namespace ArasERP.Modules.Inventory.Api.Warehouses;
 
 public static class WarehouseResponseMappings
 {
+    public static PagedList<WarehouseResponse> ToResponse(
+        this PagedList<WarehouseListItemDto> items
+    ) => items.Map(w => w.ToResponse());
+
     public static WarehouseResponse ToResponse(this WarehouseListItemDto item) =>
         new()
         {

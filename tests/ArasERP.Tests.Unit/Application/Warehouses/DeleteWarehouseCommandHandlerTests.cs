@@ -1,3 +1,4 @@
+using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Application.Warehouses.Delete;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
@@ -6,6 +7,7 @@ using FluentAssertions;
 using FluentValidation;
 using NSubstitute;
 using Xunit;
+using ValidationException = ArasERP.BuildingBlocks.Application.ValidationException;
 
 namespace ArasERP.Tests.Unit.Application.Warehouses;
 
@@ -47,7 +49,7 @@ public class DeleteWarehouseCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         var exception = await act.Should().ThrowAsync<ValidationException>();
-        exception.Which.Errors.Should().ContainSingle(e => e.PropertyName == "WarehouseId");
+        exception.Which.Errors.Should().ContainSingle(e => e.Contains("was not found"));
         await _repository.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
     }
 

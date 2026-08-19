@@ -3,4 +3,5 @@
 GET {{ArasERP_HostAddress}}/health
 Accept: application/json
 
-###
+### Search Address - Jakarta
+GET {{ArasERP_HostAddress}}/api/addresses/search?keyword=jakarta

@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\BuildingBlocks\ArasERP.BuildingBlocks\ArasERP.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Address\ArasERP.Modules.Address\ArasERP.Modules.Address.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Address\ArasERP.Modules.Address.Contracts\ArasERP.Modules.Address.Contracts.csproj" />
     <ProjectReference Include="..\..\src\Modules\Inventory\ArasERP.Modules.Inventory\ArasERP.Modules.Inventory.csproj" />
   </ItemGroup>
 </Project>
