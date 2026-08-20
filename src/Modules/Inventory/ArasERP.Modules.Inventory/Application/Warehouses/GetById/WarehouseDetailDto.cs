@@ -21,14 +21,14 @@ public sealed record WarehouseDetailDto
 
     public sealed record AddressData
     {
-        public required string Street { get; init; }
+        public required string SubDistrictName { get; init; }
 
-        public required string City { get; init; }
+        public required string DistrictName { get; init; }
 
-        public required string State { get; init; }
+        public required string CityName { get; init; }
 
-        public required string PostalCode { get; init; }
+        public required string ProvinceName { get; init; }
 
-        public string? Country { get; init; }
+        public required string ZipCode { get; init; }
     }
 }

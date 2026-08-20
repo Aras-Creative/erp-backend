@@ -1,4 +1,5 @@
 using ArasERP.BuildingBlocks.Application;
+using ArasERP.Modules.AddressClient;
 using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using ArasERP.Modules.Inventory.Domain.Warehouses.ValueObjects;
@@ -7,46 +8,45 @@ using ValidationException = ArasERP.BuildingBlocks.Application.ValidationExcepti
 
 namespace ArasERP.Modules.Inventory.Application.Warehouses.Create;
 
-public sealed class CreateWarehouseCommandHandler : ICommandHandler<CreateWarehouseCommand>
+public sealed class CreateWarehouseCommandHandler(
+    IAddressClient addressClient,
+    IWarehouseRepository warehouseRepository,
+    IValidator<CreateWarehouseCommand> validator)
+    : ICommandHandler<CreateWarehouseCommand>
 {
-    private readonly IWarehouseRepository _warehouseRepository;
-    private readonly IValidator<CreateWarehouseCommand> _validator;
-
-    public CreateWarehouseCommandHandler(
-        IWarehouseRepository warehouseRepository,
-        IValidator<CreateWarehouseCommand> validator
-    )
-    {
-        _warehouseRepository = warehouseRepository;
-        _validator = validator;
-    }
-
     public async Task Handle(
         CreateWarehouseCommand command,
         CancellationToken cancellationToken = default
     )
     {
-        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+        var validationResult = await validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
         {
             throw new ValidationException(
-                validationResult.Errors.Select(e => e.ErrorMessage).ToList()
+                [.. validationResult.Errors.Select(e => e.ErrorMessage)]
             );
         }
 
-        if (await _warehouseRepository.ExistsByNameAsync(command.Name, null, cancellationToken))
+        if (await warehouseRepository.ExistsByNameAsync(command.Name, null, cancellationToken))
         {
             throw new ValidationException(
                 $"A warehouse with name '{command.Name}' already exists."
             );
         }
 
+        var addressRef = await addressClient.GetByIdAsync(command.AddressId, cancellationToken);
+        if (addressRef is null)
+        {
+            throw new ValidationException(
+                $"Warehouse address is invalid");
+        }
+
         var address = WarehouseAddress.Create(
-            command.Address.Street,
-            command.Address.City,
-            command.Address.State,
-            command.Address.PostalCode,
-            command.Address.Country
+            addressRef.SubDistrictName,
+            addressRef.DistrictName,
+            addressRef.CityName,
+            addressRef.ProvinceName,
+            addressRef.ZipCode
         );
 
         var personInCharge = WarehousePersonInCharge.Create(
@@ -61,6 +61,6 @@ public sealed class CreateWarehouseCommandHandler : ICommandHandler<CreateWareho
             command.FullAddressText
         );
 
-        await _warehouseRepository.AddAsync(warehouse, cancellationToken);
+        await warehouseRepository.AddAsync(warehouse, cancellationToken);
     }
 }

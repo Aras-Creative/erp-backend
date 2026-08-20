@@ -24,11 +24,11 @@ public sealed record WarehouseListItemDto
                 detail.PersonInCharge.Phone
             ),
             Address = new AddressData(
-                detail.Address.Street,
-                detail.Address.City,
-                detail.Address.State,
-                detail.Address.PostalCode,
-                detail.Address.Country
+                detail.Address.SubDistrictName,
+                detail.Address.DistrictName,
+                detail.Address.CityName,
+                detail.Address.ProvinceName,
+                detail.Address.ZipCode
             ),
             FullAddressText = detail.FullAddressText,
         };
@@ -36,10 +36,10 @@ public sealed record WarehouseListItemDto
     public sealed record PersonInChargeData(string Name, string? Phone);
 
     public sealed record AddressData(
-        string Street,
-        string City,
-        string State,
-        string PostalCode,
-        string? Country
+        string SubDistrictName,
+        string DistrictName,
+        string CityName,
+        string ProvinceName,
+        string ZipCode
     );
 }

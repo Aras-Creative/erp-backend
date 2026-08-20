@@ -1,4 +1,4 @@
-namespace ArasERP.Modules.Address.Contracts.Addresses;
+namespace ArasERP.Modules.Address.Api.Dtos;
 
 public sealed class AddressSearchResultItemDto
 {

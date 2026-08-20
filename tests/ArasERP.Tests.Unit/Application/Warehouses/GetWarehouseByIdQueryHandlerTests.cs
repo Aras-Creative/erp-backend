@@ -30,11 +30,11 @@ public class GetWarehouseByIdQueryHandlerTests
             },
             Address = new WarehouseDetailDto.AddressData
             {
-                Street = "Jl. Merdeka 1",
-                City = "Jakarta",
-                State = "DKI Jakarta",
-                PostalCode = "10110",
-                Country = "Indonesia",
+                SubDistrictName = "Kebon Sirih",
+                DistrictName = "Menteng",
+                CityName = "Jakarta",
+                ProvinceName = "DKI Jakarta",
+                ZipCode = "10110",
             },
         };
         _repository.GetDetailAsync(id, Arg.Any<CancellationToken>()).Returns(expected);

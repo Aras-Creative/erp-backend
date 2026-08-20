@@ -1,11 +1,11 @@
 using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Address.Application.Abstractions;
 using ArasERP.Modules.Address.Application.Sync;
-using ArasERP.Modules.Address.Contracts.Addresses;
+using ArasERP.Modules.Address.Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace ArasERP.Modules.Address.Application.Addresses.Search;
+namespace ArasERP.Modules.Address.Application.Search;
 
 internal sealed class SearchAddressesQueryHandler(
     IAddressRepository repository,
@@ -14,9 +14,9 @@ internal sealed class SearchAddressesQueryHandler(
     AddressKeywordFetchLock fetchLock,
     IOptions<AddressSyncOptions> options,
     ILogger<SearchAddressesQueryHandler> logger)
-    : IQueryHandler<SearchAddressesQuery, IReadOnlyList<AddressSearchResultItemDto>>
+    : IQueryHandler<SearchAddressesQuery, IReadOnlyList<Domain.Address>>
 {
-    public async Task<IReadOnlyList<AddressSearchResultItemDto>> Handle(
+    public async Task<IReadOnlyList<Domain.Address>> Handle(
         SearchAddressesQuery query,
         CancellationToken cancellationToken = default)
     {
@@ -43,10 +43,10 @@ internal sealed class SearchAddressesQueryHandler(
         return await CheckFreshnessAndReturnAsync(keyword, query.Limit, localResults, cancellationToken);
     }
 
-    private async Task<IReadOnlyList<AddressSearchResultItemDto>> CheckFreshnessAndReturnAsync(
+    private async Task<IReadOnlyList<Domain.Address>> CheckFreshnessAndReturnAsync(
         string keyword,
         int limit,
-        IReadOnlyList<AddressSearchResultItemDto> localResults,
+        IReadOnlyList<Domain.Address> localResults,
         CancellationToken cancellationToken)
     {
         using var lockHandle = await fetchLock.TryAcquireAsync(

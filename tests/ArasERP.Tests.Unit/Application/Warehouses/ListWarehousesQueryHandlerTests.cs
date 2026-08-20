@@ -64,11 +64,11 @@ public class ListWarehousesQueryHandlerTests
             Name = name,
             PersonInCharge = new WarehouseListItemDto.PersonInChargeData("Budi", "08123456789"),
             Address = new WarehouseListItemDto.AddressData(
-                "Jl. Merdeka 1",
+                "Kebon Sirih",
+                "Menteng",
                 "Jakarta",
                 "DKI Jakarta",
-                "10110",
-                "Indonesia"
+                "10110"
             ),
         };
 }

@@ -1,7 +1,7 @@
 using ArasERP.BuildingBlocks.Application;
 using FluentValidation;
 
-namespace ArasERP.Modules.Address.Application.Addresses.Search;
+namespace ArasERP.Modules.Address.Application.Search;
 
 public sealed class SearchAddressesQueryValidator : AbstractValidator<SearchAddressesQuery>
 {

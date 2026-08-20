@@ -1,3 +1,3 @@
-namespace ArasERP.Modules.Inventory.Contracts.Warehouses;
+namespace ArasERP.Modules.Inventory.Api.Warehouses;
 
 public sealed record WarehouseOptionResponse(Guid WarehouseId, string Name);

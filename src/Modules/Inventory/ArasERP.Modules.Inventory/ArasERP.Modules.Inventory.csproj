@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\ArasERP.BuildingBlocks\ArasERP.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\AddressClient\ArasERP.Modules.AddressClient\ArasERP.Modules.AddressClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>

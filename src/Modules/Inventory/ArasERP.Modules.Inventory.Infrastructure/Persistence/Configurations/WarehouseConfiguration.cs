@@ -12,9 +12,9 @@ internal sealed class WarehouseConfiguration : IEntityTypeConfiguration<Warehous
 
         builder.HasKey(w => w.Id);
 
-        builder.Property(w => w.Id).HasConversion(id => id.Value, value => new WarehouseId(value));
+        builder.Property(w => w.Id).HasColumnName("id").HasConversion(id => id.Value, value => new WarehouseId(value));
 
-        builder.Property(w => w.Name).IsRequired().HasMaxLength(150);
+        builder.Property(w => w.Name).HasColumnName("name").IsRequired().HasMaxLength(150);
 
         builder.HasIndex(w => w.Name).IsUnique();
 
@@ -46,33 +46,37 @@ internal sealed class WarehouseConfiguration : IEntityTypeConfiguration<Warehous
             address =>
             {
                 address
-                    .Property(a => a.Street)
-                    .HasColumnName("address_street")
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                address
-                    .Property(a => a.City)
-                    .HasColumnName("address_city")
+                    .Property(a => a.SubDistrictName)
+                    .HasColumnName("address_sub_district_name")
                     .IsRequired()
                     .HasMaxLength(100);
 
                 address
-                    .Property(a => a.State)
-                    .HasColumnName("address_state")
+                    .Property(a => a.DistrictName)
+                    .HasColumnName("address_district_name")
                     .IsRequired()
                     .HasMaxLength(100);
 
                 address
-                    .Property(a => a.PostalCode)
-                    .HasColumnName("address_postal_code")
+                    .Property(a => a.CityName)
+                    .HasColumnName("address_city_name")
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                address
+                    .Property(a => a.ProvinceName)
+                    .HasColumnName("address_province_name")
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                address
+                    .Property(a => a.ZipCode)
+                    .HasColumnName("address_zip_code")
                     .IsRequired()
                     .HasMaxLength(20);
-
-                address.Property(a => a.Country).HasColumnName("address_country").HasMaxLength(100);
             }
         );
 
-        builder.Property(w => w.FullAddressText).HasMaxLength(500);
+        builder.Property(w => w.FullAddressText).HasColumnName("full_address_text").HasMaxLength(500);
     }
 }

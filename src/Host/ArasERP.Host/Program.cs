@@ -1,7 +1,7 @@
 using ArasERP.BuildingBlocks.Application;
 using ArasERP.BuildingBlocks.Presentation.Middleware;
 using ArasERP.Modules.Inventory;
-using ArasERP.Modules.Inventory.Api.Endpoints;
+using ArasERP.Modules.Inventory.Api.Warehouses.Endpoints;
 using ArasERP.Modules.Inventory.Infrastructure;
 using ArasERP.Modules.Inventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;

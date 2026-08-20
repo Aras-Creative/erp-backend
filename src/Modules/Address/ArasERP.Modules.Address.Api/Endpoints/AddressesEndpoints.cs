@@ -1,7 +1,7 @@
 using ArasERP.BuildingBlocks.Application;
 using ArasERP.BuildingBlocks.Presentation;
-using ArasERP.Modules.Address.Application.Addresses.Search;
-using ArasERP.Modules.Address.Contracts.Addresses;
+using ArasERP.Modules.Address.Api.Dtos;
+using ArasERP.Modules.Address.Application.Search;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -28,8 +28,24 @@ public static class AddressesEndpoints
         int limit = PaginationDefaults.MaxPageSize)
     {
         var query = new SearchAddressesQuery { Keyword = keyword, Limit = limit };
-        var results = await mediator.SendAsync<SearchAddressesQuery, IReadOnlyList<AddressSearchResultItemDto>>(query, cancellationToken);
+        var results = await mediator.SendAsync<SearchAddressesQuery, IReadOnlyList<Domain.Address>>(query, cancellationToken);
 
-        return TypedResults.Ok(ApiResponse.Success(context, results));
+        IReadOnlyList<AddressSearchResultItemDto> dto =
+        [
+            .. results.Select(a => new AddressSearchResultItemDto
+            {
+                AddressId = a.Id.Value,
+                ExternalId = a.ExternalId,
+                DestinationCode = a.DestinationCode,
+                OriginCode = a.OriginCode,
+                ProvinceName = a.ProvinceName,
+                CityName = a.CityName,
+                DistrictName = a.DistrictName,
+                SubDistrictName = a.SubDistrictName,
+                ZipCode = a.ZipCode,
+            })
+        ];
+
+        return TypedResults.Ok(ApiResponse.Success(context, dto));
     }
 }

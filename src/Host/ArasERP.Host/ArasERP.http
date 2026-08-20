@@ -1,7 +1,48 @@
 @ArasERP_HostAddress = http://localhost:5178
+@warehouseId = 63629b4c-3341-46c5-b054-db659d565ff8
 
 GET {{ArasERP_HostAddress}}/health
 Accept: application/json
 
 ### Search Address - Jakarta
 GET {{ArasERP_HostAddress}}/api/addresses/search?keyword=jakarta
+
+### Create Warehouse 
+POST {{ArasERP_HostAddress}}/api/warehouses
+Content-Type: application/json
+
+{
+    "name": "Gudang Pusat",
+    "addressId": "8304b1ba-055f-40af-91c5-5f40e42be8a9",
+    "personInCharge": {
+        "name": "Budi Santoso",
+        "phone": "08123456789"
+    },
+    "fullAddressText": "Jl. Gambir Raya No. 10, Jakarta Pusat"
+}
+
+### List Warehouses
+GET {{ArasERP_HostAddress}}/api/warehouses?page=1&pageSize=10
+
+### Get Warehouse Options
+GET {{ArasERP_HostAddress}}/api/warehouses/options
+
+### Get Warehouse By Id
+GET {{ArasERP_HostAddress}}/api/warehouses/{{warehouseId}}
+
+### Update Warehouse
+PUT {{ArasERP_HostAddress}}/api/warehouses/{{warehouseId}}
+Content-Type: application/json
+
+{
+    "name": "Gudang Pusat Updated",
+    "addressId": "92326417-fbf1-4ad8-9126-94ec83079841",
+    "personInCharge": {
+        "name": "Budi Santoso",
+        "phone": "08123456789"
+    },
+    "fullAddressText": "Jl. Menteng Raya No. 10, Jakarta Pusat"
+}
+
+### Delete Warehouse
+DELETE {{ArasERP_HostAddress}}/api/warehouses/{{warehouseId}}

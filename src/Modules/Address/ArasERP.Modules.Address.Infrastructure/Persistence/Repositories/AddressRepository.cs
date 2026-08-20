@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using ArasERP.Modules.Address.Application.Abstractions;
-using ArasERP.Modules.Address.Contracts.Addresses;
 using ArasERP.Modules.Address.Domain;
 using Microsoft.EntityFrameworkCore;
 using NpgsqlTypes;
@@ -63,7 +62,7 @@ public sealed class AddressRepository : IAddressRepository
             : Expression.Lambda<Func<Domain.Address, bool>>(body, parameter);
     }
 
-    public async Task<IReadOnlyList<AddressSearchResultItemDto>> SearchAsync(
+    public async Task<IReadOnlyList<Domain.Address>> SearchAsync(
         string keyword,
         int limit,
         CancellationToken cancellationToken = default)
@@ -83,19 +82,6 @@ public sealed class AddressRepository : IAddressRepository
             .ThenBy(a => a.DistrictName)
             .ThenBy(a => a.SubDistrictName)
             .Take(limit)
-            .Select(
-                a => new AddressSearchResultItemDto
-                {
-                    AddressId = a.Id.Value,
-                    ExternalId = a.ExternalId,
-                    DestinationCode = a.DestinationCode,
-                    OriginCode = a.OriginCode,
-                    ProvinceName = a.ProvinceName,
-                    CityName = a.CityName,
-                    DistrictName = a.DistrictName,
-                    SubDistrictName = a.SubDistrictName,
-                    ZipCode = a.ZipCode,
-                })
             .ToListAsync(cancellationToken);
     }
 

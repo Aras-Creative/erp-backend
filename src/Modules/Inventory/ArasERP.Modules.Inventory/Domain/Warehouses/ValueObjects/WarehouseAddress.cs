@@ -5,52 +5,53 @@ namespace ArasERP.Modules.Inventory.Domain.Warehouses.ValueObjects;
 public sealed class WarehouseAddress : ValueObject
 {
     private WarehouseAddress(
-        string street,
-        string city,
-        string state,
-        string postalCode,
-        string? country
+        string subDistrictName,
+        string districtName,
+        string cityName,
+        string provinceName,
+        string zipCode
     )
     {
-        Street = street;
-        City = city;
-        State = state;
-        PostalCode = postalCode;
-        Country = country;
+        SubDistrictName = subDistrictName;
+        DistrictName = districtName;
+        CityName = cityName;
+        ProvinceName = provinceName;
+        ZipCode = zipCode;
     }
 
     public static WarehouseAddress Create(
-        string street,
-        string city,
-        string state,
-        string postalCode,
-        string? country = null
+        string subDistrictName,
+        string districtName,
+        string cityName,
+        string provinceName,
+        string zipCode
     )
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(street);
-        ArgumentException.ThrowIfNullOrWhiteSpace(city);
-        ArgumentException.ThrowIfNullOrWhiteSpace(state);
-        ArgumentException.ThrowIfNullOrWhiteSpace(postalCode);
+        ArgumentException.ThrowIfNullOrWhiteSpace(subDistrictName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(districtName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(cityName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(provinceName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(zipCode);
 
-        return new WarehouseAddress(street, city, state, postalCode, country);
+        return new WarehouseAddress(subDistrictName, districtName, cityName, provinceName, zipCode);
     }
 
-    public string Street { get; }
+    public string SubDistrictName { get; }
 
-    public string City { get; }
+    public string DistrictName { get; }
 
-    public string State { get; }
+    public string CityName { get; }
 
-    public string PostalCode { get; }
+    public string ProvinceName { get; }
 
-    public string? Country { get; }
+    public string ZipCode { get; }
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {
-        yield return Street;
-        yield return City;
-        yield return State;
-        yield return PostalCode;
-        yield return Country;
+        yield return SubDistrictName;
+        yield return DistrictName;
+        yield return CityName;
+        yield return ProvinceName;
+        yield return ZipCode;
     }
 }
