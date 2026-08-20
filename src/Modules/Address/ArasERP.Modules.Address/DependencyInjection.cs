@@ -1,6 +1,8 @@
 using ArasERP.BuildingBlocks.Application;
-using ArasERP.Modules.Address.Application.Addresses.Search;
+using ArasERP.Modules.Address.Application;
+using ArasERP.Modules.Address.Application.Search;
 using ArasERP.Modules.Address.Domain;
+using ArasERP.Modules.AddressClient;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +18,8 @@ public static class DependencyInjection
             IQueryHandler<SearchAddressesQuery, IReadOnlyList<Domain.Address>>,
             SearchAddressesQueryHandler
         >();
+
+        services.AddScoped<ArasERP.Modules.AddressClient.IAddressClient, AddressClientImpl>();
 
         return services;
     }

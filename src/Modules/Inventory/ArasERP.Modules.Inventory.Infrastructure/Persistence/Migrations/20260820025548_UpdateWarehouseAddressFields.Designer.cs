@@ -3,6 +3,7 @@ using System;
 using ArasERP.Modules.Inventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260820025548_UpdateWarehouseAddressFields")]
+    partial class UpdateWarehouseAddressFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,8 +28,7 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ArasERP.Modules.Inventory.Domain.Warehouses.Warehouse", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("DeletedAtUtc")
                         .HasColumnType("timestamp with time zone")
@@ -34,8 +36,7 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("FullAddressText")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("full_address_text");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
@@ -44,8 +45,7 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
-                        .HasColumnName("name");
+                        .HasColumnType("character varying(150)");
 
                     b.HasKey("Id");
 

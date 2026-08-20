@@ -7,14 +7,13 @@ using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetOptions;
 using ArasERP.Modules.Inventory.Application.Warehouses.List;
 using ArasERP.Modules.Inventory.Application.Warehouses.Update;
-using ArasERP.Modules.Inventory.Contracts.Warehouses;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace ArasERP.Modules.Inventory.Api.Endpoints;
+namespace ArasERP.Modules.Inventory.Api.Warehouses.Endpoints;
 
 public static class WarehousesEndpoints
 {
@@ -92,23 +91,24 @@ public static class WarehousesEndpoints
     }
 
     private static async Task<Created> CreateWarehouse(
-        CreateWarehouseRequest request,
-        ICommandHandler<CreateWarehouseCommand> handler,
+        CreateWarehouseCommand command,
+        IMediator mediator,
         CancellationToken cancellationToken
     )
     {
-        await handler.Handle(request.ToCommand(), cancellationToken);
+        await mediator.SendAsync<CreateWarehouseCommand>(command, cancellationToken);
         return TypedResults.Created();
     }
 
     private static async Task<NoContent> UpdateWarehouse(
         Guid id,
-        UpdateWarehouseRequest request,
-        ICommandHandler<UpdateWarehouseCommand> handler,
+        UpdateWarehouseCommand command,
+        IMediator mediator,
         CancellationToken cancellationToken
     )
     {
-        await handler.Handle(request.ToCommand(id), cancellationToken);
+        command.WarehouseId = id.ToString();
+        await mediator.SendAsync<UpdateWarehouseCommand>(command, cancellationToken);
         return TypedResults.NoContent();
     }
 

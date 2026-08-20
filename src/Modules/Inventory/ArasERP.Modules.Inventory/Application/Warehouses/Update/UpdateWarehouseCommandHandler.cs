@@ -1,4 +1,5 @@
 using ArasERP.BuildingBlocks.Application;
+using ArasERP.Modules.AddressClient;
 using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using ArasERP.Modules.Inventory.Domain.Warehouses.ValueObjects;
@@ -7,26 +8,18 @@ using ValidationException = ArasERP.BuildingBlocks.Application.ValidationExcepti
 
 namespace ArasERP.Modules.Inventory.Application.Warehouses.Update;
 
-public sealed class UpdateWarehouseCommandHandler : ICommandHandler<UpdateWarehouseCommand>
+public sealed class UpdateWarehouseCommandHandler(
+    IAddressClient addressClient,
+    IWarehouseRepository warehouseRepository,
+    IValidator<UpdateWarehouseCommand> validator)
+    : ICommandHandler<UpdateWarehouseCommand>
 {
-    private readonly IWarehouseRepository _warehouseRepository;
-    private readonly IValidator<UpdateWarehouseCommand> _validator;
-
-    public UpdateWarehouseCommandHandler(
-        IWarehouseRepository warehouseRepository,
-        IValidator<UpdateWarehouseCommand> validator
-    )
-    {
-        _warehouseRepository = warehouseRepository;
-        _validator = validator;
-    }
-
     public async Task Handle(
         UpdateWarehouseCommand command,
         CancellationToken cancellationToken = default
     )
     {
-        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+        var validationResult = await validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
         {
             throw new ValidationException(
@@ -37,7 +30,7 @@ public sealed class UpdateWarehouseCommandHandler : ICommandHandler<UpdateWareho
         var warehouseId = new WarehouseId(Guid.Parse(command.WarehouseId));
 
         if (
-            await _warehouseRepository.ExistsByNameAsync(
+            await warehouseRepository.ExistsByNameAsync(
                 command.Name,
                 warehouseId,
                 cancellationToken
@@ -50,17 +43,24 @@ public sealed class UpdateWarehouseCommandHandler : ICommandHandler<UpdateWareho
         }
 
         var warehouse =
-            await _warehouseRepository.GetByIdAsync(warehouseId, cancellationToken)
+            await warehouseRepository.GetByIdAsync(warehouseId, cancellationToken)
             ?? throw new ValidationException(
                 $"Warehouse with id '{command.WarehouseId}' was not found."
             );
 
+        var addressRef = await addressClient.GetByIdAsync(command.AddressId, cancellationToken);
+        if (addressRef is null)
+        {
+            throw new ValidationException(
+                $"Warehouse address is invalid");
+        }
+
         var address = WarehouseAddress.Create(
-            command.Address.Street,
-            command.Address.City,
-            command.Address.State,
-            command.Address.PostalCode,
-            command.Address.Country
+            addressRef.SubDistrictName,
+            addressRef.DistrictName,
+            addressRef.CityName,
+            addressRef.ProvinceName,
+            addressRef.ZipCode
         );
 
         var personInCharge = WarehousePersonInCharge.Create(
@@ -70,6 +70,6 @@ public sealed class UpdateWarehouseCommandHandler : ICommandHandler<UpdateWareho
 
         warehouse.Update(command.Name, personInCharge, address, command.FullAddressText);
 
-        await _warehouseRepository.UpdateAsync(warehouse, cancellationToken);
+        await warehouseRepository.UpdateAsync(warehouse, cancellationToken);
     }
 }

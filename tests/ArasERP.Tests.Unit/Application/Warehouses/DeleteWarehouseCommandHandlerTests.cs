@@ -69,7 +69,7 @@ public class DeleteWarehouseCommandHandlerTests
         return Warehouse.Create(
             "Gudang Utama",
             WarehousePersonInCharge.Create("Budi"),
-            WarehouseAddress.Create("Jl. Merdeka 1", "Jakarta", "DKI Jakarta", "10110"),
+            WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110"),
             "Sebelah pasar"
         );
     }

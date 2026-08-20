@@ -7,24 +7,16 @@ public class CreateWarehouseCommandValidatorTests
 {
     private readonly CreateWarehouseCommandValidator _sut = new();
 
-    private static CreateWarehouseCommand.AddressData CreateAddress() =>
-        new()
-        {
-            Street = "Jl. Merdeka 1",
-            City = "Jakarta",
-            State = "DKI Jakarta",
-            PostalCode = "10110",
-            Country = "Indonesia",
-        };
-
     private static CreateWarehouseCommand.PersonInChargeData CreatePersonInCharge() =>
         new() { Name = "Budi", Phone = "08123456789" };
 
-    private static CreateWarehouseCommand CreateCommand(string? name = "Gudang Utama") =>
+    private static CreateWarehouseCommand CreateCommand(
+        string? name = "Gudang Utama",
+        Guid? addressId = null) =>
         new()
         {
             Name = name!,
-            Address = CreateAddress(),
+            AddressId = addressId ?? Guid.NewGuid(),
             PersonInCharge = CreatePersonInCharge(),
             FullAddressText = "Sebelah pasar",
         };
@@ -52,12 +44,12 @@ public class CreateWarehouseCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_WithNullAddress_ReturnsError()
+    public void Validate_WithEmptyAddressId_ReturnsError()
     {
         var command = new CreateWarehouseCommand
         {
             Name = "Gudang Utama",
-            Address = null!,
+            AddressId = Guid.Empty,
             PersonInCharge = CreatePersonInCharge(),
         };
 
@@ -66,29 +58,7 @@ public class CreateWarehouseCommandValidatorTests
         result.IsValid.Should().BeFalse();
         result
             .Errors.Should()
-            .ContainSingle(e => e.PropertyName == nameof(CreateWarehouseCommand.Address));
-    }
-
-    [Theory]
-    [InlineData("Street")]
-    [InlineData("City")]
-    [InlineData("State")]
-    [InlineData("PostalCode")]
-    public void Validate_WithMissingAddressComponent_ReturnsError(string component)
-    {
-        var command = CreateCommand();
-        typeof(CreateWarehouseCommand.AddressData)
-            .GetProperty(component)!
-            .SetValue(command.Address, null);
-
-        var result = _sut.Validate(command);
-
-        result.IsValid.Should().BeFalse();
-        result
-            .Errors.Should()
-            .ContainSingle(e =>
-                e.PropertyName == $"{nameof(CreateWarehouseCommand.Address)}.{component}"
-            );
+            .ContainSingle(e => e.PropertyName == nameof(CreateWarehouseCommand.AddressId));
     }
 
     [Fact]
@@ -97,7 +67,7 @@ public class CreateWarehouseCommandValidatorTests
         var command = new CreateWarehouseCommand
         {
             Name = "Gudang Utama",
-            Address = CreateAddress(),
+            AddressId = Guid.NewGuid(),
             PersonInCharge = null!,
         };
 
@@ -115,7 +85,7 @@ public class CreateWarehouseCommandValidatorTests
         var command = new CreateWarehouseCommand
         {
             Name = "Gudang Utama",
-            Address = CreateAddress(),
+            AddressId = Guid.NewGuid(),
             PersonInCharge = new CreateWarehouseCommand.PersonInChargeData { Name = "" },
         };
 

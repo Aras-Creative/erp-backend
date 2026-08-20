@@ -5,7 +5,7 @@ using ArasERP.Modules.Address.Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace ArasERP.Modules.Address.Application.Addresses.Search;
+namespace ArasERP.Modules.Address.Application.Search;
 
 internal sealed class SearchAddressesQueryHandler(
     IAddressRepository repository,

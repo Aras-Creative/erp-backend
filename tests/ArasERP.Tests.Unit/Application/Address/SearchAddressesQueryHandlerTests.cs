@@ -1,5 +1,5 @@
 using ArasERP.Modules.Address.Application.Abstractions;
-using ArasERP.Modules.Address.Application.Addresses.Search;
+using ArasERP.Modules.Address.Application.Search;
 using ArasERP.Modules.Address.Application.Sync;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;

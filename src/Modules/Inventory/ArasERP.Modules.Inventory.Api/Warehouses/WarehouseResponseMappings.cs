@@ -2,7 +2,6 @@ using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetOptions;
 using ArasERP.Modules.Inventory.Application.Warehouses.List;
-using ArasERP.Modules.Inventory.Contracts.Warehouses;
 
 namespace ArasERP.Modules.Inventory.Api.Warehouses;
 
@@ -22,11 +21,11 @@ public static class WarehouseResponseMappings
                 item.PersonInCharge.Phone
             ),
             Address = new WarehouseResponse.AddressData(
-                item.Address.Street,
-                item.Address.City,
-                item.Address.State,
-                item.Address.PostalCode,
-                item.Address.Country
+                item.Address.SubDistrictName,
+                item.Address.DistrictName,
+                item.Address.CityName,
+                item.Address.ProvinceName,
+                item.Address.ZipCode
             ),
             FullAddressText = item.FullAddressText,
         };
@@ -41,11 +40,11 @@ public static class WarehouseResponseMappings
                 detail.PersonInCharge.Phone
             ),
             Address = new WarehouseResponse.AddressData(
-                detail.Address.Street,
-                detail.Address.City,
-                detail.Address.State,
-                detail.Address.PostalCode,
-                detail.Address.Country
+                detail.Address.SubDistrictName,
+                detail.Address.DistrictName,
+                detail.Address.CityName,
+                detail.Address.ProvinceName,
+                detail.Address.ZipCode
             ),
             FullAddressText = detail.FullAddressText,
         };

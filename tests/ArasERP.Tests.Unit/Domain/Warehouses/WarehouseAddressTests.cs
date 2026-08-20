@@ -9,46 +9,41 @@ public class WarehouseAddressTests
     public void Create_WithValidData_SetsProperties()
     {
         var address = WarehouseAddress.Create(
-            "Jl. Merdeka 1",
+            "Kebon Sirih",
+            "Menteng",
             "Jakarta",
             "DKI Jakarta",
-            "10110",
-            "Indonesia"
+            "10110"
         );
 
-        address.Street.Should().Be("Jl. Merdeka 1");
-        address.City.Should().Be("Jakarta");
-        address.State.Should().Be("DKI Jakarta");
-        address.PostalCode.Should().Be("10110");
-        address.Country.Should().Be("Indonesia");
-    }
-
-    [Fact]
-    public void Create_WithNullCountry_LeavesItNull()
-    {
-        var address = WarehouseAddress.Create("Jl. Merdeka 1", "Jakarta", "DKI Jakarta", "10110");
-
-        address.Country.Should().BeNull();
+        address.SubDistrictName.Should().Be("Kebon Sirih");
+        address.DistrictName.Should().Be("Menteng");
+        address.CityName.Should().Be("Jakarta");
+        address.ProvinceName.Should().Be("DKI Jakarta");
+        address.ZipCode.Should().Be("10110");
     }
 
     [Theory]
-    [InlineData("", "City", "State", "12345")]
-    [InlineData(" ", "City", "State", "12345")]
-    [InlineData(null, "City", "State", "12345")]
-    [InlineData("Street", "", "State", "12345")]
-    [InlineData("Street", null, "State", "12345")]
-    [InlineData("Street", "City", " ", "12345")]
-    [InlineData("Street", "City", null, "12345")]
-    [InlineData("Street", "City", "State", "")]
-    [InlineData("Street", "City", "State", null)]
+    [InlineData("", "District", "City", "State", "12345")]
+    [InlineData(" ", "District", "City", "State", "12345")]
+    [InlineData(null, "District", "City", "State", "12345")]
+    [InlineData("SubDistrict", "", "City", "State", "12345")]
+    [InlineData("SubDistrict", null, "City", "State", "12345")]
+    [InlineData("SubDistrict", "District", "", "State", "12345")]
+    [InlineData("SubDistrict", "District", null, "State", "12345")]
+    [InlineData("SubDistrict", "District", "City", " ", "12345")]
+    [InlineData("SubDistrict", "District", "City", null, "12345")]
+    [InlineData("SubDistrict", "District", "City", "State", "")]
+    [InlineData("SubDistrict", "District", "City", "State", null)]
     public void Create_WithNullOrWhiteSpaceRequiredComponent_Throws(
-        string? street,
-        string? city,
-        string? state,
-        string? postalCode
+        string? subDistrictName,
+        string? districtName,
+        string? cityName,
+        string? provinceName,
+        string? zipCode
     )
     {
-        var act = () => WarehouseAddress.Create(street!, city!, state!, postalCode!);
+        var act = () => WarehouseAddress.Create(subDistrictName!, districtName!, cityName!, provinceName!, zipCode!);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -56,20 +51,8 @@ public class WarehouseAddressTests
     [Fact]
     public void TwoAddresses_WithSameValues_AreEqual()
     {
-        var first = WarehouseAddress.Create(
-            "Jl. Merdeka 1",
-            "Jakarta",
-            "DKI Jakarta",
-            "10110",
-            "Indonesia"
-        );
-        var second = WarehouseAddress.Create(
-            "Jl. Merdeka 1",
-            "Jakarta",
-            "DKI Jakarta",
-            "10110",
-            "Indonesia"
-        );
+        var first = WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
+        var second = WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
 
         first.Should().Be(second);
     }
@@ -77,20 +60,8 @@ public class WarehouseAddressTests
     [Fact]
     public void TwoAddresses_WithDifferentValues_AreNotEqual()
     {
-        var first = WarehouseAddress.Create(
-            "Jl. Merdeka 1",
-            "Jakarta",
-            "DKI Jakarta",
-            "10110",
-            "Indonesia"
-        );
-        var second = WarehouseAddress.Create(
-            "Jl. Sudirman 2",
-            "Jakarta",
-            "DKI Jakarta",
-            "10220",
-            "Indonesia"
-        );
+        var first = WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
+        var second = WarehouseAddress.Create("Batununggal", "Bandung Kota", "Bandung", "Jawa Barat", "40111");
 
         first.Should().NotBe(second);
     }

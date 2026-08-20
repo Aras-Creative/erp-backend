@@ -24,11 +24,11 @@ public sealed class WarehouseRepository : IWarehouseRepository
         },
         Address = new WarehouseDetailDto.AddressData
         {
-            Street = w.Address.Street,
-            City = w.Address.City,
-            State = w.Address.State,
-            PostalCode = w.Address.PostalCode,
-            Country = w.Address.Country,
+            SubDistrictName = w.Address.SubDistrictName,
+            DistrictName = w.Address.DistrictName,
+            CityName = w.Address.CityName,
+            ProvinceName = w.Address.ProvinceName,
+            ZipCode = w.Address.ZipCode,
         },
         FullAddressText = w.FullAddressText,
     };

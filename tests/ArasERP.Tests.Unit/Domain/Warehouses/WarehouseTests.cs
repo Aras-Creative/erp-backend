@@ -11,7 +11,7 @@ public class WarehouseTests
         WarehousePersonInCharge.Create("Budi", "08123456789");
 
     private static WarehouseAddress CreateAddress() =>
-        WarehouseAddress.Create("Jl. Merdeka 1", "Jakarta", "DKI Jakarta", "10110", "Indonesia");
+        WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
 
     [Fact]
     public void Create_WithValidData_SetsProperties()
