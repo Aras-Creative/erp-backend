@@ -1,3 +1,4 @@
+using ArasERP.Modules.Inventory.Domain.Batches;
 using ArasERP.Modules.Inventory.Domain.StockItems;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ public sealed class InventoryDbContext : DbContext
 
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
     public DbSet<StockItem> StockItems => Set<StockItem>();
+    public DbSet<Batch> Batches => Set<Batch>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

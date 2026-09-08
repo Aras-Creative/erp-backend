@@ -14,6 +14,7 @@ public interface IWarehouseRepository
         CancellationToken cancellationToken = default
     );
     Task<Warehouse?> GetByIdAsync(WarehouseId id, CancellationToken cancellationToken = default);
+    Task<bool> IsActiveAsync(WarehouseId id, CancellationToken cancellationToken = default);
     Task<WarehouseDetailDto?> GetDetailAsync(
         Guid warehouseId,
         CancellationToken cancellationToken = default

@@ -53,6 +53,14 @@ public sealed class WarehouseRepository(InventoryDbContext dbContext) : IWarehou
         return await dbContext.Warehouses.FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
     }
 
+    public async Task<bool> IsActiveAsync(
+        WarehouseId id,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await dbContext.Warehouses.AnyAsync(w => w.Id == id, cancellationToken);
+    }
+
     public async Task<WarehouseDetailDto?> GetDetailAsync(
         Guid warehouseId,
         CancellationToken cancellationToken = default

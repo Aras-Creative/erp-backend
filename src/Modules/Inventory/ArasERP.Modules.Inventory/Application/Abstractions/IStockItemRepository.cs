@@ -9,14 +9,21 @@ public sealed record StockItemListFilter(
     int Page,
     int PageSize,
     string? OrderBy,
-    bool Descending);
+    bool Descending
+);
 
 public interface IStockItemRepository
 {
     Task AddAsync(StockItem stockItem, CancellationToken cancellationToken = default);
-    Task<bool> ExistsBySkuAsync(string sku, StockItemId? excludeId, CancellationToken cancellationToken = default);
+    Task<bool> ExistsBySkuAsync(
+        string sku,
+        StockItemId? excludeId,
+        CancellationToken cancellationToken = default
+    );
+    Task<bool> IsActiveAsync(StockItemId id, CancellationToken cancellationToken = default);
 
     Task<PagedList<StockItem>> ListAsync(
         StockItemListFilter filter,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }
