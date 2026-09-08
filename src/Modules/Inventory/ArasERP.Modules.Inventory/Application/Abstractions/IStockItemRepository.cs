@@ -1,4 +1,5 @@
 using ArasERP.BuildingBlocks.Application;
+using ArasERP.Modules.Inventory.Application.StockItems.List;
 using ArasERP.Modules.Inventory.Domain.StockItems;
 
 namespace ArasERP.Modules.Inventory.Application.Abstractions;
@@ -9,7 +10,8 @@ public sealed record StockItemListFilter(
     int Page,
     int PageSize,
     string? OrderBy,
-    bool Descending
+    bool Descending,
+    Guid? WarehouseId
 );
 
 public interface IStockItemRepository
@@ -22,7 +24,7 @@ public interface IStockItemRepository
     );
     Task<bool> IsActiveAsync(StockItemId id, CancellationToken cancellationToken = default);
 
-    Task<PagedList<StockItem>> ListAsync(
+    Task<PagedList<ListStockItemsDto>> ListAsync(
         StockItemListFilter filter,
         CancellationToken cancellationToken = default
     );

@@ -28,7 +28,9 @@ public class ListStockItemsQueryValidatorTests
         var result = _sut.Validate(query);
 
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle(e => e.PropertyName == nameof(ListStockItemsQuery.Page));
+        result
+            .Errors.Should()
+            .ContainSingle(e => e.PropertyName == nameof(ListStockItemsQuery.Page));
     }
 
     [Theory]
@@ -42,7 +44,9 @@ public class ListStockItemsQueryValidatorTests
         var result = _sut.Validate(query);
 
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle(e => e.PropertyName == nameof(ListStockItemsQuery.PageSize));
+        result
+            .Errors.Should()
+            .ContainSingle(e => e.PropertyName == nameof(ListStockItemsQuery.PageSize));
     }
 
     [Theory]
@@ -72,6 +76,33 @@ public class ListStockItemsQueryValidatorTests
         var result = _sut.Validate(query);
 
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle(e => e.PropertyName == nameof(ListStockItemsQuery.OrderBy));
+        result
+            .Errors.Should()
+            .ContainSingle(e => e.PropertyName == nameof(ListStockItemsQuery.OrderBy));
+    }
+
+    [Fact]
+    public void Validate_WithEmptyWarehouseId_ReturnsError()
+    {
+        var query = CreateQuery();
+        query.WarehouseId = Guid.Empty;
+
+        var result = _sut.Validate(query);
+
+        result.IsValid.Should().BeFalse();
+        result
+            .Errors.Should()
+            .ContainSingle(e => e.PropertyName == nameof(ListStockItemsQuery.WarehouseId));
+    }
+
+    [Fact]
+    public void Validate_WithValidWarehouseId_ReturnsNoErrors()
+    {
+        var query = CreateQuery();
+        query.WarehouseId = Guid.NewGuid();
+
+        var result = _sut.Validate(query);
+
+        result.IsValid.Should().BeTrue();
     }
 }

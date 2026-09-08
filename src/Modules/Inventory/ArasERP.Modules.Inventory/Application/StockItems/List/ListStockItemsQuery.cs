@@ -14,4 +14,6 @@ public sealed class ListStockItemsQuery : IQuery, IQuery<PagedList<ListStockItem
     public bool Descending { get; set; }
 
     public bool? IsActive { get; set; }
+
+    public Guid? WarehouseId { get; set; }
 }

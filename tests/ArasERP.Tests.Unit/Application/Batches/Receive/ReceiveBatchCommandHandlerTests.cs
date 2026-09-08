@@ -3,6 +3,7 @@ using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Application.Batches.Receive;
 using ArasERP.Modules.Inventory.Domain.Batches;
 using ArasERP.Modules.Inventory.Domain.StockItems;
+using ArasERP.Modules.Inventory.Domain.StockLevels;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using FluentAssertions;
 using NSubstitute;
@@ -16,6 +17,9 @@ public class ReceiveBatchCommandHandlerTests
         Substitute.For<IStockItemRepository>();
     private readonly IWarehouseRepository _warehouseRepository =
         Substitute.For<IWarehouseRepository>();
+    private readonly IStockLevelRepository _stockLevelRepository =
+        Substitute.For<IStockLevelRepository>();
+    private readonly IInventoryUnitOfWork _unitOfWork = Substitute.For<IInventoryUnitOfWork>();
     private readonly ReceiveBatchCommandValidator _validator = new();
     private readonly ReceiveBatchCommandHandler _sut;
 
@@ -28,6 +32,8 @@ public class ReceiveBatchCommandHandlerTests
             _batchRepository,
             _stockItemRepository,
             _warehouseRepository,
+            _stockLevelRepository,
+            _unitOfWork,
             _validator
         );
 
@@ -37,6 +43,9 @@ public class ReceiveBatchCommandHandlerTests
         _warehouseRepository
             .IsActiveAsync(Arg.Any<WarehouseId>(), Arg.Any<CancellationToken>())
             .Returns(true);
+        _unitOfWork
+            .ExecuteInTransactionAsync(Arg.Any<Func<Task>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.Arg<Func<Task>>()());
     }
 
     private ReceiveBatchCommand CreateCommand(
@@ -56,10 +65,13 @@ public class ReceiveBatchCommandHandlerTests
         };
 
     [Fact]
-    public async Task Handle_WithValidCommand_PersistsActiveBatch()
+    public async Task Handle_WithValidCommand_PersistsBatchInTransaction()
     {
         await _sut.Handle(CreateCommand(), CancellationToken.None);
 
+        await _unitOfWork
+            .Received(1)
+            .ExecuteInTransactionAsync(Arg.Any<Func<Task>>(), Arg.Any<CancellationToken>());
         await _batchRepository
             .Received(1)
             .AddAsync(
@@ -78,6 +90,51 @@ public class ReceiveBatchCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_WithValidCommand_CreatesStockLevelWithReceivedQty()
+    {
+        await _sut.Handle(CreateCommand(), CancellationToken.None);
+
+        await _stockLevelRepository
+            .Received(1)
+            .AddAsync(
+                Arg.Is<StockLevel>(l =>
+                    l.ItemId == new StockItemId(_itemId)
+                    && l.WarehouseId == new WarehouseId(_warehouseId)
+                    && l.OnHandQty == 100
+                    && l.ReservedQty == 0
+                    && l.AvailableQty == 100
+                ),
+                Arg.Any<CancellationToken>()
+            );
+        await _stockLevelRepository.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
+    }
+
+    [Fact]
+    public async Task Handle_WhenStockLevelExists_UpdatesExistingStockLevel()
+    {
+        var existing = StockLevel.Create(new StockItemId(_itemId), new WarehouseId(_warehouseId));
+        existing.Receive(50);
+
+        _stockLevelRepository
+            .GetByKeyAsync(
+                new StockItemId(_itemId),
+                new WarehouseId(_warehouseId),
+                Arg.Any<CancellationToken>()
+            )
+            .Returns(existing);
+
+        await _sut.Handle(CreateCommand(), CancellationToken.None);
+
+        await _stockLevelRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
+        await _stockLevelRepository
+            .Received(1)
+            .UpdateAsync(
+                Arg.Is<StockLevel>(l => l.OnHandQty == 150 && l.AvailableQty == 150),
+                Arg.Any<CancellationToken>()
+            );
+    }
+
+    [Fact]
     public async Task Handle_WithDuplicateReceiptNumber_ThrowsAndDoesNotPersist()
     {
         _batchRepository
@@ -89,6 +146,8 @@ public class ReceiveBatchCommandHandlerTests
         var exception = await act.Should().ThrowAsync<ValidationException>();
         exception.Which.Errors.Should().ContainSingle(e => e.Contains("already exists"));
         await _batchRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
+        await _stockLevelRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
+        await _stockLevelRepository.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
     }
 
     [Fact]
@@ -103,6 +162,8 @@ public class ReceiveBatchCommandHandlerTests
         var exception = await act.Should().ThrowAsync<ValidationException>();
         exception.Which.Errors.Should().ContainSingle(e => e.Contains("item"));
         await _batchRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
+        await _stockLevelRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
+        await _stockLevelRepository.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
     }
 
     [Fact]
@@ -119,6 +180,8 @@ public class ReceiveBatchCommandHandlerTests
             .Which.Errors.Should()
             .ContainSingle(e => e.Contains("warehouse", StringComparison.OrdinalIgnoreCase));
         await _batchRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
+        await _stockLevelRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
+        await _stockLevelRepository.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
     }
 
     [Fact]
@@ -129,5 +192,7 @@ public class ReceiveBatchCommandHandlerTests
 
         await act.Should().ThrowAsync<ValidationException>();
         await _batchRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
+        await _stockLevelRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
+        await _stockLevelRepository.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
     }
 }
