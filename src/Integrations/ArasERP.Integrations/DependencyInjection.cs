@@ -9,10 +9,12 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddIntegrations(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
         services.Configure<IntegrationsOptions>(
-            configuration.GetSection(IntegrationsOptions.SectionName));
+            configuration.GetSection(IntegrationsOptions.SectionName)
+        );
 
         services.AddHttpClient<MengantarClient>(client =>
         {

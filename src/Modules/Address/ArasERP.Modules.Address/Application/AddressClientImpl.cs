@@ -8,11 +8,13 @@ internal sealed class AddressClientImpl(IAddressRepository repository) : IAddres
 {
     public async Task<AddressDto?> GetByIdAsync(
         Guid addressId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var address = await repository.GetByIdAsync(
             new Domain.AddressId(addressId),
-            cancellationToken);
+            cancellationToken
+        );
 
         if (address is null)
             return null;

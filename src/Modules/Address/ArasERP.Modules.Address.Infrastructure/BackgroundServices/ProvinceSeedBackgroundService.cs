@@ -10,8 +10,8 @@ public sealed class ProvinceSeedBackgroundService(
     ILogger<ProvinceSeedBackgroundService> logger,
     IOptions<AddressSyncOptions> options,
     IServiceProvider serviceProvider,
-    AddressKeywordFetchLock fetchLock)
-    : BackgroundService
+    AddressKeywordFetchLock fetchLock
+) : BackgroundService
 {
     private static readonly string[] ProvinceKeywords =
     [
@@ -63,7 +63,8 @@ public sealed class ProvinceSeedBackgroundService(
         logger.LogInformation(
             "Province seed service started. Interval: {IntervalMinutes}m, Keywords: {Count}",
             options.Value.IntervalMinutes,
-            ProvinceKeywords.Length);
+            ProvinceKeywords.Length
+        );
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
@@ -84,15 +85,17 @@ public sealed class ProvinceSeedBackgroundService(
 
     private async Task SeedAllKeywordsAsync(CancellationToken cancellationToken)
     {
-        var batches = ProvinceKeywords
-            .Chunk(options.Value.BatchSize)
-            .ToList();
+        var batches = ProvinceKeywords.Chunk(options.Value.BatchSize).ToList();
 
         var processedCount = 0;
         var skippedCount = 0;
         var failedCount = 0;
 
-        foreach (var tasks in batches.Select(batch => batch.Select(keyword => SeedKeywordAsync(keyword, cancellationToken))))
+        foreach (
+            var tasks in batches.Select(batch =>
+                batch.Select(keyword => SeedKeywordAsync(keyword, cancellationToken))
+            )
+        )
         {
             var results = await Task.WhenAll(tasks);
 
@@ -105,17 +108,20 @@ public sealed class ProvinceSeedBackgroundService(
             "Province seed cycle completed. Processed: {Processed}, Skipped: {Skipped}, Failed: {Failed}",
             processedCount,
             skippedCount,
-            failedCount);
+            failedCount
+        );
     }
 
     private async Task<SeedResult> SeedKeywordAsync(
         string keyword,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         using var lockHandle = await fetchLock.TryAcquireAsync(
             keyword,
             TimeSpan.FromSeconds(2),
-            cancellationToken);
+            cancellationToken
+        );
 
         if (lockHandle is null)
         {
@@ -124,7 +130,9 @@ public sealed class ProvinceSeedBackgroundService(
 
         try
         {
-            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(
+                cancellationToken
+            );
             timeoutCts.CancelAfter(TimeSpan.FromSeconds(options.Value.TimeoutPerKeywordSeconds));
 
             using var scope = serviceProvider.CreateScope();

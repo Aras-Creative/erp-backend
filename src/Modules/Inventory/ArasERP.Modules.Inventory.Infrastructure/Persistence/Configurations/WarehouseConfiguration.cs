@@ -12,7 +12,10 @@ internal sealed class WarehouseConfiguration : IEntityTypeConfiguration<Warehous
 
         builder.HasKey(w => w.Id);
 
-        builder.Property(w => w.Id).HasColumnName("id").HasConversion(id => id.Value, value => new WarehouseId(value));
+        builder
+            .Property(w => w.Id)
+            .HasColumnName("id")
+            .HasConversion(id => id.Value, value => new WarehouseId(value));
 
         builder.Property(w => w.Name).HasColumnName("name").IsRequired().HasMaxLength(150);
 
@@ -77,6 +80,9 @@ internal sealed class WarehouseConfiguration : IEntityTypeConfiguration<Warehous
             }
         );
 
-        builder.Property(w => w.FullAddressText).HasColumnName("full_address_text").HasMaxLength(500);
+        builder
+            .Property(w => w.FullAddressText)
+            .HasColumnName("full_address_text")
+            .HasMaxLength(500);
     }
 }

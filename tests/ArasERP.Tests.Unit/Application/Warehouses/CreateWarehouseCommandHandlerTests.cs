@@ -24,20 +24,23 @@ public class CreateWarehouseCommandHandlerTests
 
         _addressClient
             .GetByIdAsync(SampleAddressId, Arg.Any<CancellationToken>())
-            .Returns(new AddressDto
-            {
-                AddressId = SampleAddressId,
-                ProvinceName = "DKI Jakarta",
-                CityName = "Jakarta",
-                DistrictName = "Menteng",
-                SubDistrictName = "Kebon Sirih",
-                ZipCode = "10110",
-            });
+            .Returns(
+                new AddressDto
+                {
+                    AddressId = SampleAddressId,
+                    ProvinceName = "DKI Jakarta",
+                    CityName = "Jakarta",
+                    DistrictName = "Menteng",
+                    SubDistrictName = "Kebon Sirih",
+                    ZipCode = "10110",
+                }
+            );
     }
 
     private static CreateWarehouseCommand CreateCommand(
         string? name = "Gudang Utama",
-        Guid? addressId = null) =>
+        Guid? addressId = null
+    ) =>
         new()
         {
             Name = name!,

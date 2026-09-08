@@ -50,7 +50,10 @@ public static class DependencyInjection
         >();
 
         services.AddScoped<IValidator<CreateStockItemCommand>, CreateStockItemValidator>();
-        services.AddScoped<ICommandHandler<CreateStockItemCommand>, CreateStockItemCommandHandler>();
+        services.AddScoped<
+            ICommandHandler<CreateStockItemCommand>,
+            CreateStockItemCommandHandler
+        >();
 
         services.AddScoped<IValidator<ReceiveBatchCommand>, ReceiveBatchCommandValidator>();
         services.AddScoped<ICommandHandler<ReceiveBatchCommand>, ReceiveBatchCommandHandler>();

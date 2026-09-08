@@ -14,7 +14,7 @@ public static class StockItemEndpoints
         var stockItems = endpoints.MapGroup("api/stock-items").WithTags("StockItems");
 
         stockItems.MapPost("/", CreateStockItems).WithName(nameof(CreateStockItems));
-        
+
         return endpoints;
     }
 

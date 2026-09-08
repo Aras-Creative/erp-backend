@@ -10,11 +10,11 @@ public sealed class StockItem : AggregateRoot<StockItemId>
     public string Unit { get; private set; } = null!;
     public CostingMethod CostingMethod { get; private set; } = null!;
     public bool IsActive { get; private set; }
-    
+
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     public DateTime? DeletedAt { get; private set; }
-    
+
     public string? CreatedBy { get; private set; }
     public string? UpdatedBy { get; private set; }
     public string? DeletedBy { get; private set; }
@@ -25,7 +25,8 @@ public sealed class StockItem : AggregateRoot<StockItemId>
         string sku,
         string unit,
         CostingMethod costingMethod,
-        string? createdBy = null)
+        string? createdBy = null
+    )
         : base(id)
     {
         Name = name;
@@ -33,7 +34,7 @@ public sealed class StockItem : AggregateRoot<StockItemId>
         Unit = unit;
         CostingMethod = costingMethod;
         IsActive = true;
-        
+
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
         CreatedBy = createdBy;
@@ -47,7 +48,8 @@ public sealed class StockItem : AggregateRoot<StockItemId>
         string sku,
         string unit,
         CostingMethod costingMethod,
-        string? createdBy = null)
+        string? createdBy = null
+    )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(sku);
@@ -94,7 +96,7 @@ public sealed class StockItem : AggregateRoot<StockItemId>
     {
         if (DeletedAt.HasValue)
             return;
-            
+
         DeletedAt = DateTime.UtcNow;
         DeletedBy = deletedBy;
         IsActive = false;
@@ -105,7 +107,7 @@ public sealed class StockItem : AggregateRoot<StockItemId>
     {
         if (!DeletedAt.HasValue)
             return;
-            
+
         DeletedAt = null;
         DeletedBy = null;
         IsActive = true;

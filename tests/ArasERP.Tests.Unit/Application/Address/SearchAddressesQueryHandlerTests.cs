@@ -22,19 +22,22 @@ public class SearchAddressesQueryHandlerTests
         _repository = Substitute.For<IAddressRepository>();
         _syncStateCache = Substitute.For<IKeywordSyncStateCache>();
         _fetchLock = new AddressKeywordFetchLock();
-        _options = Options.Create(new AddressSyncOptions
-        {
-            Provider = "mengantar",
-            FreshnessTtlSeconds = 3600,
-            FreshnessCheckTimeoutSeconds = 3,
-            FallbackTimeoutSeconds = 15,
-        });
+        _options = Options.Create(
+            new AddressSyncOptions
+            {
+                Provider = "mengantar",
+                FreshnessTtlSeconds = 3600,
+                FreshnessCheckTimeoutSeconds = 3,
+                FallbackTimeoutSeconds = 15,
+            }
+        );
 
         _syncService = new AddressSyncerService(
             Substitute.For<IAddressProvider>(),
             _repository,
             _syncStateCache,
-            _options);
+            _options
+        );
 
         _sut = new SearchAddressesQueryHandler(
             _repository,
@@ -42,7 +45,8 @@ public class SearchAddressesQueryHandlerTests
             _syncStateCache,
             _fetchLock,
             _options,
-            Substitute.For<ILogger<SearchAddressesQueryHandler>>());
+            Substitute.For<ILogger<SearchAddressesQueryHandler>>()
+        );
     }
 
     [Fact]
@@ -50,10 +54,9 @@ public class SearchAddressesQueryHandlerTests
     {
         var query = new SearchAddressesQuery { Keyword = "jakarta", Limit = 10 };
 
-        _repository.SearchAsync("jakarta", 10, Arg.Any<CancellationToken>())
-            .Returns(
-                _ => CreateEmptyResults(),
-                _ => CreateSingleResult());
+        _repository
+            .SearchAsync("jakarta", 10, Arg.Any<CancellationToken>())
+            .Returns(_ => CreateEmptyResults(), _ => CreateSingleResult());
 
         var result = await _sut.Handle(query, CancellationToken.None);
 
@@ -66,10 +69,12 @@ public class SearchAddressesQueryHandlerTests
     {
         var query = new SearchAddressesQuery { Keyword = "bandung", Limit = 10 };
 
-        _repository.SearchAsync("bandung", 10, Arg.Any<CancellationToken>())
+        _repository
+            .SearchAsync("bandung", 10, Arg.Any<CancellationToken>())
             .Returns(CreateSingleResult());
 
-        _syncStateCache.Get("mengantar", "bandung")
+        _syncStateCache
+            .Get("mengantar", "bandung")
             .Returns(new KeywordSyncState("etag-123", DateTimeOffset.UtcNow.AddMinutes(-10)));
 
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -82,13 +87,18 @@ public class SearchAddressesQueryHandlerTests
     {
         var query = new SearchAddressesQuery { Keyword = "medan", Limit = 10 };
 
-        _repository.SearchAsync("medan", 10, Arg.Any<CancellationToken>())
+        _repository
+            .SearchAsync("medan", 10, Arg.Any<CancellationToken>())
             .Returns(CreateSingleResult());
 
-        _syncStateCache.Get("mengantar", "medan")
+        _syncStateCache
+            .Get("mengantar", "medan")
             .Returns(new KeywordSyncState("etag-old", DateTimeOffset.UtcNow.AddHours(-2)));
 
-        using var competingLock = await _fetchLock.TryAcquireAsync("medan", TimeSpan.FromSeconds(5));
+        using var competingLock = await _fetchLock.TryAcquireAsync(
+            "medan",
+            TimeSpan.FromSeconds(5)
+        );
 
         var result = await _sut.Handle(query, CancellationToken.None);
 
@@ -100,11 +110,11 @@ public class SearchAddressesQueryHandlerTests
     {
         var query = new SearchAddressesQuery { Keyword = "yogyakarta", Limit = 10 };
 
-        _repository.SearchAsync("yogyakarta", 10, Arg.Any<CancellationToken>())
+        _repository
+            .SearchAsync("yogyakarta", 10, Arg.Any<CancellationToken>())
             .Returns(CreateSingleResult());
 
-        _syncStateCache.Get("mengantar", "yogyakarta")
-            .Returns((KeywordSyncState?)null);
+        _syncStateCache.Get("mengantar", "yogyakarta").Returns((KeywordSyncState?)null);
 
         var result = await _sut.Handle(query, CancellationToken.None);
 
@@ -124,7 +134,8 @@ public class SearchAddressesQueryHandlerTests
                 cityName: "MERAUKE",
                 districtName: "MUTING",
                 subDistrictName: "SEED AGUNG",
-                zipCode: "99652"),
+                zipCode: "99652"
+            ),
         ];
     }
 }

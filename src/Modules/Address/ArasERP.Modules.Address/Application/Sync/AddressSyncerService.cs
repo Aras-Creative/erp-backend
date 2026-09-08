@@ -8,11 +8,13 @@ public class AddressSyncerService(
     IAddressProvider provider,
     IAddressRepository repository,
     IKeywordSyncStateCache syncStateCache,
-    IOptions<AddressSyncOptions> options)
+    IOptions<AddressSyncOptions> options
+)
 {
     public virtual async Task<AddressSyncResult> SyncAsync(
         string keyword,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         keyword = keyword.Trim();
         if (string.IsNullOrWhiteSpace(keyword))

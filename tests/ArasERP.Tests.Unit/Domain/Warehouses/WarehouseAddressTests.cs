@@ -43,7 +43,14 @@ public class WarehouseAddressTests
         string? zipCode
     )
     {
-        var act = () => WarehouseAddress.Create(subDistrictName!, districtName!, cityName!, provinceName!, zipCode!);
+        var act = () =>
+            WarehouseAddress.Create(
+                subDistrictName!,
+                districtName!,
+                cityName!,
+                provinceName!,
+                zipCode!
+            );
 
         act.Should().Throw<ArgumentException>();
     }
@@ -51,8 +58,20 @@ public class WarehouseAddressTests
     [Fact]
     public void TwoAddresses_WithSameValues_AreEqual()
     {
-        var first = WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
-        var second = WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
+        var first = WarehouseAddress.Create(
+            "Kebon Sirih",
+            "Menteng",
+            "Jakarta",
+            "DKI Jakarta",
+            "10110"
+        );
+        var second = WarehouseAddress.Create(
+            "Kebon Sirih",
+            "Menteng",
+            "Jakarta",
+            "DKI Jakarta",
+            "10110"
+        );
 
         first.Should().Be(second);
     }
@@ -60,8 +79,20 @@ public class WarehouseAddressTests
     [Fact]
     public void TwoAddresses_WithDifferentValues_AreNotEqual()
     {
-        var first = WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
-        var second = WarehouseAddress.Create("Batununggal", "Bandung Kota", "Bandung", "Jawa Barat", "40111");
+        var first = WarehouseAddress.Create(
+            "Kebon Sirih",
+            "Menteng",
+            "Jakarta",
+            "DKI Jakarta",
+            "10110"
+        );
+        var second = WarehouseAddress.Create(
+            "Batununggal",
+            "Bandung Kota",
+            "Bandung",
+            "Jawa Barat",
+            "40111"
+        );
 
         first.Should().NotBe(second);
     }

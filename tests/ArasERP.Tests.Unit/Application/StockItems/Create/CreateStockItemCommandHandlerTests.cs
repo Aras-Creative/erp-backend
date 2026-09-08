@@ -23,7 +23,8 @@ public class CreateStockItemCommandHandlerTests
         string? name = "Indomie Goreng",
         string? sku = "SKU-001",
         string? unit = "Pcs",
-        string? costingMethod = "FIFO") =>
+        string? costingMethod = "FIFO"
+    ) =>
         new()
         {
             Name = name!,
@@ -79,9 +80,7 @@ public class CreateStockItemCommandHandlerTests
     public async Task Handle_WithDuplicateSku_ThrowsValidationExceptionAndDoesNotPersist()
     {
         var command = CreateCommand();
-        _repository
-            .ExistsBySkuAsync(command.Sku, null, Arg.Any<CancellationToken>())
-            .Returns(true);
+        _repository.ExistsBySkuAsync(command.Sku, null, Arg.Any<CancellationToken>()).Returns(true);
 
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 

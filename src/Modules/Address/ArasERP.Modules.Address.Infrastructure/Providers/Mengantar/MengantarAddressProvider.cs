@@ -13,7 +13,11 @@ internal sealed class MengantarAddressProvider : IAddressProvider
         _client = client;
     }
 
-    public async Task<AddressProviderResult> SearchAsync(string keyword, string? etag, CancellationToken ct)
+    public async Task<AddressProviderResult> SearchAsync(
+        string keyword,
+        string? etag,
+        CancellationToken ct
+    )
     {
         var response = await _client.SearchAddressAsync(keyword, etag, ct);
 
@@ -22,9 +26,7 @@ internal sealed class MengantarAddressProvider : IAddressProvider
             return AddressProviderResult.Unchanged();
         }
 
-        var addresses = response.Items
-            .Select(MapToAddress)
-            .ToList();
+        var addresses = response.Items.Select(MapToAddress).ToList();
 
         return new AddressProviderResult(false, response.Etag, addresses);
     }
@@ -39,6 +41,7 @@ internal sealed class MengantarAddressProvider : IAddressProvider
             districtName: item.DistrictName ?? string.Empty,
             subDistrictName: item.SubDistrictName ?? string.Empty,
             zipCode: item.ZipCode ?? string.Empty,
-            externalId: item.Id);
+            externalId: item.Id
+        );
     }
 }

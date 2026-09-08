@@ -11,8 +11,8 @@ namespace ArasERP.Modules.Inventory.Application.Warehouses.Create;
 public sealed class CreateWarehouseCommandHandler(
     IAddressClient addressClient,
     IWarehouseRepository warehouseRepository,
-    IValidator<CreateWarehouseCommand> validator)
-    : ICommandHandler<CreateWarehouseCommand>
+    IValidator<CreateWarehouseCommand> validator
+) : ICommandHandler<CreateWarehouseCommand>
 {
     public async Task Handle(
         CreateWarehouseCommand command,
@@ -22,9 +22,7 @@ public sealed class CreateWarehouseCommandHandler(
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
         {
-            throw new ValidationException(
-                [.. validationResult.Errors.Select(e => e.ErrorMessage)]
-            );
+            throw new ValidationException([.. validationResult.Errors.Select(e => e.ErrorMessage)]);
         }
 
         if (await warehouseRepository.ExistsByNameAsync(command.Name, null, cancellationToken))
@@ -37,8 +35,7 @@ public sealed class CreateWarehouseCommandHandler(
         var addressRef = await addressClient.GetByIdAsync(command.AddressId, cancellationToken);
         if (addressRef is null)
         {
-            throw new ValidationException(
-                $"Warehouse address is invalid");
+            throw new ValidationException($"Warehouse address is invalid");
         }
 
         var address = WarehouseAddress.Create(

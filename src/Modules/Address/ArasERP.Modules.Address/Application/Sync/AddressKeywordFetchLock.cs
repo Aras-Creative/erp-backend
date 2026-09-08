@@ -9,7 +9,8 @@ public class AddressKeywordFetchLock
     public async Task<IDisposable?> TryAcquireAsync(
         string keyword,
         TimeSpan timeout,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var semaphore = _locks.GetOrAdd(keyword, _ => new SemaphoreSlim(1, 1));
 
@@ -23,8 +24,11 @@ public class AddressKeywordFetchLock
         _locks.TryRemove(keyword, out _);
     }
 
-    private sealed class LockRelease(SemaphoreSlim semaphore, string keyword, AddressKeywordFetchLock owner)
-        : IDisposable
+    private sealed class LockRelease(
+        SemaphoreSlim semaphore,
+        string keyword,
+        AddressKeywordFetchLock owner
+    ) : IDisposable
     {
         private bool _disposed;
 

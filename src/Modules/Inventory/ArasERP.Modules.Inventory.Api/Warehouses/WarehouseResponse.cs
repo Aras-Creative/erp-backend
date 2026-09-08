@@ -11,6 +11,10 @@ public sealed class WarehouseResponse
     public sealed record PersonInChargeData(string Name, string? Phone);
 
     public sealed record AddressData(
-        string SubDistrictName, string DistrictName, string CityName, string ProvinceName, string ZipCode
+        string SubDistrictName,
+        string DistrictName,
+        string CityName,
+        string ProvinceName,
+        string ZipCode
     );
 }

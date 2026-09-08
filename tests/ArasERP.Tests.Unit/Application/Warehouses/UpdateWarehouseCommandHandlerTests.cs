@@ -33,19 +33,21 @@ public class UpdateWarehouseCommandHandlerTests
         var addressId = Guid.NewGuid();
         var command = CreateCommand(warehouse.Id.Value.ToString(), addressId);
         _repository.GetByIdAsync(warehouse.Id, Arg.Any<CancellationToken>()).Returns(warehouse);
-        _addressClient.GetByIdAsync(addressId, Arg.Any<CancellationToken>()).Returns(
-            new AddressDto
-            {
-                AddressId = addressId,
-                DestinationCode = "CGK10302",
-                OriginCode = "CGK10000",
-                ProvinceName = "DKI JAKARTA",
-                CityName = "JAKARTA PUSAT",
-                DistrictName = "GAMBIR",
-                SubDistrictName = "GAMBIR",
-                ZipCode = "10110"
-            }
-        );
+        _addressClient
+            .GetByIdAsync(addressId, Arg.Any<CancellationToken>())
+            .Returns(
+                new AddressDto
+                {
+                    AddressId = addressId,
+                    DestinationCode = "CGK10302",
+                    OriginCode = "CGK10000",
+                    ProvinceName = "DKI JAKARTA",
+                    CityName = "JAKARTA PUSAT",
+                    DistrictName = "GAMBIR",
+                    SubDistrictName = "GAMBIR",
+                    ZipCode = "10110",
+                }
+            );
 
         await _sut.Handle(command, CancellationToken.None);
 

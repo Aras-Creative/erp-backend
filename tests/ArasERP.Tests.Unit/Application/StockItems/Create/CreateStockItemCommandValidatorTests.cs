@@ -11,7 +11,8 @@ public class CreateStockItemValidatorTests
         string? name = "Indomie Goreng",
         string? sku = "SKU-001",
         string? unit = "Pcs",
-        string? costingMethod = "FIFO") =>
+        string? costingMethod = "FIFO"
+    ) =>
         new()
         {
             Name = name!,

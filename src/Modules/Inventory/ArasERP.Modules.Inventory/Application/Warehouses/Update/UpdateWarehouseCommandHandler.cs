@@ -11,8 +11,8 @@ namespace ArasERP.Modules.Inventory.Application.Warehouses.Update;
 public sealed class UpdateWarehouseCommandHandler(
     IAddressClient addressClient,
     IWarehouseRepository warehouseRepository,
-    IValidator<UpdateWarehouseCommand> validator)
-    : ICommandHandler<UpdateWarehouseCommand>
+    IValidator<UpdateWarehouseCommand> validator
+) : ICommandHandler<UpdateWarehouseCommand>
 {
     public async Task Handle(
         UpdateWarehouseCommand command,
@@ -51,8 +51,7 @@ public sealed class UpdateWarehouseCommandHandler(
         var addressRef = await addressClient.GetByIdAsync(command.AddressId, cancellationToken);
         if (addressRef is null)
         {
-            throw new ValidationException(
-                $"Warehouse address is invalid");
+            throw new ValidationException($"Warehouse address is invalid");
         }
 
         var address = WarehouseAddress.Create(
