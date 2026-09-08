@@ -1,6 +1,7 @@
 using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Batches.Receive;
 using ArasERP.Modules.Inventory.Application.StockItems.Create;
+using ArasERP.Modules.Inventory.Application.StockItems.List;
 using ArasERP.Modules.Inventory.Application.Warehouses.Create;
 using ArasERP.Modules.Inventory.Application.Warehouses.Delete;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
@@ -53,6 +54,12 @@ public static class DependencyInjection
         services.AddScoped<
             ICommandHandler<CreateStockItemCommand>,
             CreateStockItemCommandHandler
+        >();
+
+        services.AddScoped<IValidator<ListStockItemsQuery>, ListStockItemsQueryValidator>();
+        services.AddScoped<
+            IQueryHandler<ListStockItemsQuery, PagedList<ListStockItemsDto>>,
+            ListStockItemsQueryHandler
         >();
 
         services.AddScoped<IValidator<ReceiveBatchCommand>, ReceiveBatchCommandValidator>();

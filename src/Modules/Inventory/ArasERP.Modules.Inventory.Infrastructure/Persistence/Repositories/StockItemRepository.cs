@@ -44,6 +44,16 @@ public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockIt
         CancellationToken cancellationToken = default
     )
     {
+        string? filteredWarehouseName = null;
+        if (filter.WarehouseId.HasValue)
+        {
+            filteredWarehouseName = await dbContext
+                .Warehouses.AsNoTracking()
+                .Where(w => w.Id == new WarehouseId(filter.WarehouseId.Value))
+                .Select(w => w.Name)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         IQueryable<StockItem> itemQuery = dbContext.StockItems.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(filter.Search))
@@ -68,29 +78,31 @@ public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockIt
             from item in itemQuery
             join level in levelQuery on item.Id equals level.ItemId into levelGroup
             from level in levelGroup.DefaultIfEmpty()
-            select new { Item = item, Level = level };
+            join warehouse in dbContext.Warehouses.AsNoTracking()
+                on level.WarehouseId equals warehouse.Id
+                into warehouseGroup
+            from warehouse in warehouseGroup.DefaultIfEmpty()
+            select new
+            {
+                Item = item,
+                Level = level,
+                Warehouse = warehouse,
+            };
 
         var projected =
             from row in joined
-            group row by new
+            select new
             {
                 Id = row.Item.Id.Value,
                 row.Item.Sku,
                 row.Item.Name,
                 row.Item.Unit,
                 row.Item.IsActive,
-                row.Item.CostingMethod,
-            } into g
-            select new
-            {
-                g.Key.Id,
-                g.Key.Sku,
-                g.Key.Name,
-                g.Key.Unit,
-                g.Key.IsActive,
-                CostingMethod = g.Key.CostingMethod.Value,
-                OnHandQty = g.Sum(r => r.Level != null ? r.Level.OnHandQty : 0m),
-                ReservedQty = g.Sum(r => r.Level != null ? r.Level.ReservedQty : 0m),
+                CostingMethod = row.Item.CostingMethod.Value,
+                WarehouseId = row.Level != null ? row.Level.WarehouseId.Value : (Guid?)null,
+                WarehouseName = row.Warehouse != null ? row.Warehouse.Name : null,
+                OnHandQty = row.Level != null ? row.Level.OnHandQty : 0m,
+                ReservedQty = row.Level != null ? row.Level.ReservedQty : 0m,
             };
 
         projected = filter.OrderBy?.ToLowerInvariant() switch
@@ -110,9 +122,12 @@ public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockIt
 
         var totalCount = await projected.CountAsync(cancellationToken);
 
-        var items = await projected
+        var pageRows = await projected
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
+            .ToListAsync(cancellationToken);
+
+        var items = pageRows
             .Select(x => new ListStockItemsDto
             {
                 Id = x.Id,
@@ -120,11 +135,13 @@ public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockIt
                 Name = x.Name,
                 Unit = x.Unit,
                 IsActive = x.IsActive,
+                WarehouseId = x.WarehouseId ?? filter.WarehouseId,
+                WarehouseName = x.WarehouseName ?? filteredWarehouseName,
                 OnHandQty = x.OnHandQty,
                 ReservedQty = x.ReservedQty,
                 AvailableQty = x.OnHandQty - x.ReservedQty,
             })
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         return new PagedList<ListStockItemsDto>(items, filter.Page, filter.PageSize, totalCount);
     }

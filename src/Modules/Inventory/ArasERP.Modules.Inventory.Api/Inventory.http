@@ -11,3 +11,11 @@ Content-Type: application/json
     "unit": "pcs",
     "costingMethod": "FIFO"
 }
+
+### List Stock Items
+GET {{ArasERP_HostAddress}}/stock-items
+Accept: application/json
+
+### List Stock Items for a warehouse
+GET {{ArasERP_HostAddress}}/stock-items?warehouseId=<warehouse-id>
+Accept: application/json

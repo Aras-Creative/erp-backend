@@ -1,6 +1,6 @@
-namespace ArasERP.Modules.Inventory.Application.StockItems.List;
+namespace ArasERP.Modules.Inventory.Api.StockItems;
 
-public sealed class ListStockItemsDto
+public sealed class StockItemResponse
 {
     public Guid Id { get; init; }
 

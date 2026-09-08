@@ -28,6 +28,8 @@ public class ListStockItemsQueryHandlerTests
             Name = "Indomie Goreng",
             Unit = "Pcs",
             IsActive = true,
+            WarehouseId = Guid.NewGuid(),
+            WarehouseName = "Gudang Utama",
             OnHandQty = 100,
             ReservedQty = 20,
             AvailableQty = 80,
