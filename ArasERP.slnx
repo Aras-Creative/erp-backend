@@ -23,8 +23,6 @@
   </Folder>
   <Folder Name="/src/Integrations/">
     <Project Path="src/Integrations/ArasERP.Integrations/ArasERP.Integrations.csproj" />
-    <Project Path="src/Integrations/ArasERP.Integrations.Infrastructure/ArasERP.Integrations.Infrastructure.csproj" />
-    <Project Path="src/Integrations/ArasERP.Integrations.Api/ArasERP.Integrations.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ArasERP.Tests.Unit/ArasERP.Tests.Unit.csproj" />

@@ -1,3 +1,4 @@
+using ArasERP.Modules.Inventory.Domain.StockItems;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ public sealed class InventoryDbContext : DbContext
         : base(options) { }
 
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
+    public DbSet<StockItem> StockItems => Set<StockItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

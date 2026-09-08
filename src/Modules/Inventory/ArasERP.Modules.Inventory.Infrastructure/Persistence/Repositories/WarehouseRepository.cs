@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Repositories;
 
-public sealed class WarehouseRepository : IWarehouseRepository
+public sealed class WarehouseRepository(InventoryDbContext dbContext) : IWarehouseRepository
 {
     private static readonly Expression<
         Func<Warehouse, WarehouseDetailDto>
@@ -33,20 +33,13 @@ public sealed class WarehouseRepository : IWarehouseRepository
         FullAddressText = w.FullAddressText,
     };
 
-    private readonly InventoryDbContext _dbContext;
-
-    public WarehouseRepository(InventoryDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<bool> ExistsByNameAsync(
         string name,
         WarehouseId? excludeId = null,
         CancellationToken cancellationToken = default
     )
     {
-        return await _dbContext.Warehouses.AnyAsync(
+        return await dbContext.Warehouses.AnyAsync(
             w => w.Name == name && (excludeId == null || w.Id != excludeId),
             cancellationToken
         );
@@ -57,7 +50,7 @@ public sealed class WarehouseRepository : IWarehouseRepository
         CancellationToken cancellationToken = default
     )
     {
-        return await _dbContext.Warehouses.FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
+        return await dbContext.Warehouses.FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
     }
 
     public async Task<WarehouseDetailDto?> GetDetailAsync(
@@ -65,7 +58,7 @@ public sealed class WarehouseRepository : IWarehouseRepository
         CancellationToken cancellationToken = default
     )
     {
-        return await _dbContext
+        return await dbContext
             .Warehouses.Where(w => w.Id == new WarehouseId(warehouseId))
             .Select(WarehouseDetailProjection)
             .FirstOrDefaultAsync(cancellationToken);
@@ -77,7 +70,7 @@ public sealed class WarehouseRepository : IWarehouseRepository
         CancellationToken cancellationToken = default
     )
     {
-        var query = _dbContext.Warehouses.OrderBy(w => w.Name);
+        var query = dbContext.Warehouses.OrderBy(w => w.Name);
 
         var totalCount = await query.CountAsync(cancellationToken);
 
@@ -99,7 +92,7 @@ public sealed class WarehouseRepository : IWarehouseRepository
         CancellationToken cancellationToken = default
     )
     {
-        return await _dbContext
+        return await dbContext
             .Warehouses.Where(w => !w.IsDeleted)
             .OrderBy(w => w.Name)
             .Select(w => new WarehouseOptionDto(w.Id.Value, w.Name))
@@ -108,8 +101,8 @@ public sealed class WarehouseRepository : IWarehouseRepository
 
     public async Task AddAsync(Warehouse warehouse, CancellationToken cancellationToken = default)
     {
-        await _dbContext.Warehouses.AddAsync(warehouse, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.Warehouses.AddAsync(warehouse, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(
@@ -117,7 +110,7 @@ public sealed class WarehouseRepository : IWarehouseRepository
         CancellationToken cancellationToken = default
     )
     {
-        _dbContext.Warehouses.Update(warehouse);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        dbContext.Warehouses.Update(warehouse);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

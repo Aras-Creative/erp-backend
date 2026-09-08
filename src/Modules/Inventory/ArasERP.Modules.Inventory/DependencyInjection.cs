@@ -1,4 +1,5 @@
 using ArasERP.BuildingBlocks.Application;
+using ArasERP.Modules.Inventory.Application.StockItems.Create;
 using ArasERP.Modules.Inventory.Application.Warehouses.Create;
 using ArasERP.Modules.Inventory.Application.Warehouses.Delete;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
@@ -46,6 +47,9 @@ public static class DependencyInjection
             IQueryHandler<GetWarehouseByIdQuery, WarehouseDetailDto?>,
             GetWarehouseByIdQueryHandler
         >();
+
+        services.AddScoped<IValidator<CreateStockItemCommand>, CreateStockItemValidator>();
+        services.AddScoped<ICommandHandler<CreateStockItemCommand>, CreateStockItemCommandHandler>();
 
         return services;
     }

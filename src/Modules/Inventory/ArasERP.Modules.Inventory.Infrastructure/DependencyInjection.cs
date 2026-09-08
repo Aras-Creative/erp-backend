@@ -17,6 +17,7 @@ public static class DependencyInjection
         services.AddDbContext<InventoryDbContext>(options => options.UseNpgsql(connectionString));
 
         services.AddScoped<IWarehouseRepository, WarehouseRepository>();
+        services.AddScoped<IStockItemRepository, StockItemRepository>();
 
         return services;
     }

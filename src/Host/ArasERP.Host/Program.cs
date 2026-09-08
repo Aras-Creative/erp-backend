@@ -11,6 +11,7 @@ using ArasERP.Modules.Address.Api.Endpoints;
 using ArasERP.Modules.Address.Infrastructure;
 using ArasERP.Modules.Address.Infrastructure.Persistence;
 using ArasERP.Integrations;
+using ArasERP.Modules.Inventory.Api.StockItems.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,5 +55,6 @@ app.MapGet("/health", () => Results.Ok(new { Status = "Healthy" }));
 
 app.MapWarehouseEndpoints();
 app.MapAddressEndpoints();
+app.MapStockItemEndpoints();
 
 app.Run();

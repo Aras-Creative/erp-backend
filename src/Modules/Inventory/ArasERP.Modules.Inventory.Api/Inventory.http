@@ -1,0 +1,13 @@
+@ArasERP_HostAddress = http://localhost:5178/api
+
+
+### Create Stock Items
+POST {{ArasERP_HostAddress}}/stock-items
+Content-Type: application/json
+
+{
+    "name": "Jiancare Qianpross",
+    "sku": "jcr-qp",
+    "unit": "pcs",
+    "costingMethod": "FIFO"
+}
