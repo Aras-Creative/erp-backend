@@ -1,16 +1,17 @@
 using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Abstractions;
-using ArasERP.Modules.Inventory.Application.Batches.Receive;
+using ArasERP.Modules.Inventory.Application.Batches.Create;
 using ArasERP.Modules.Inventory.Domain.Batches;
 using ArasERP.Modules.Inventory.Domain.StockItems;
 using ArasERP.Modules.Inventory.Domain.StockLevels;
+using ArasERP.Modules.Inventory.Domain.StockMovements;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using FluentAssertions;
 using NSubstitute;
 
-namespace ArasERP.Tests.Unit.Application.Batches.Receive;
+namespace ArasERP.Tests.Unit.Application.Batches.Create;
 
-public class ReceiveBatchCommandHandlerTests
+public class CreateBatchCommandHandlerTests
 {
     private readonly IBatchRepository _batchRepository = Substitute.For<IBatchRepository>();
     private readonly IStockItemRepository _stockItemRepository =
@@ -19,20 +20,23 @@ public class ReceiveBatchCommandHandlerTests
         Substitute.For<IWarehouseRepository>();
     private readonly IStockLevelRepository _stockLevelRepository =
         Substitute.For<IStockLevelRepository>();
+    private readonly IStockMovementRepository _stockMovementRepository =
+        Substitute.For<IStockMovementRepository>();
     private readonly IInventoryUnitOfWork _unitOfWork = Substitute.For<IInventoryUnitOfWork>();
-    private readonly ReceiveBatchCommandValidator _validator = new();
-    private readonly ReceiveBatchCommandHandler _sut;
+    private readonly CreateBatchCommandValidator _validator = new();
+    private readonly CreateBatchCommandHandler _sut;
 
     private readonly Guid _itemId = Guid.NewGuid();
     private readonly Guid _warehouseId = Guid.NewGuid();
 
-    public ReceiveBatchCommandHandlerTests()
+    public CreateBatchCommandHandlerTests()
     {
-        _sut = new ReceiveBatchCommandHandler(
+        _sut = new CreateBatchCommandHandler(
             _batchRepository,
             _stockItemRepository,
             _warehouseRepository,
             _stockLevelRepository,
+            _stockMovementRepository,
             _unitOfWork,
             _validator
         );
@@ -48,10 +52,12 @@ public class ReceiveBatchCommandHandlerTests
             .Returns(ci => ci.Arg<Func<Task>>()());
     }
 
-    private ReceiveBatchCommand CreateCommand(
+    private CreateBatchCommand CreateCommand(
         decimal receivedQty = 100,
         decimal unitCost = 10,
-        string? receiptNumber = "RCV-001"
+        string sourceType = "PURCHASE",
+        string? direction = null,
+        string? note = null
     ) =>
         new()
         {
@@ -60,7 +66,9 @@ public class ReceiveBatchCommandHandlerTests
             ReceivedQty = receivedQty,
             UnitCost = unitCost,
             ReceivedAt = DateTime.UtcNow,
-            ReceiptNumber = receiptNumber!,
+            SourceType = sourceType,
+            Direction = direction,
+            Note = note,
             RecordedBy = "budi",
         };
 
@@ -81,7 +89,6 @@ public class ReceiveBatchCommandHandlerTests
                     && b.ReceivedQty == 100
                     && b.RemainingQty == 100
                     && b.UnitCost == 10
-                    && b.ReceiptNumber == "RCV-001"
                     && b.RecordedBy == "budi"
                     && b.Status == BatchStatus.Active
                 ),
@@ -110,6 +117,68 @@ public class ReceiveBatchCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_WithPurchaseSource_RecordsInboundPurchaseMovement()
+    {
+        StockMovement? captured = null;
+        _stockMovementRepository
+            .When(x => x.AddAsync(Arg.Any<StockMovement>(), Arg.Any<CancellationToken>()))
+            .Do(ci => captured = ci.Arg<StockMovement>());
+
+        await _sut.Handle(
+            CreateCommand(note: "Received from supplier", sourceType: "PURCHASE"),
+            CancellationToken.None
+        );
+
+        await _stockMovementRepository
+            .Received(1)
+            .AddAsync(Arg.Any<StockMovement>(), Arg.Any<CancellationToken>());
+
+        captured.Should().NotBeNull();
+        captured!.ItemId.Should().Be(new StockItemId(_itemId));
+        captured.WarehouseId.Should().Be(new WarehouseId(_warehouseId));
+        captured.Direction.Should().Be(Direction.In);
+        captured.Quantity.Should().Be(100);
+        captured.SourceType.Should().Be(SourceType.Purchase);
+        captured.BatchId.Should().NotBeNull();
+        captured.SourceReferenceId.Should().BeNull();
+        captured.Note.Should().Be("Received from supplier");
+        captured.CreatedBy.Should().Be("budi");
+    }
+
+    [Fact]
+    public async Task Handle_WithSaleSource_RecordsOutboundSaleMovement()
+    {
+        StockMovement? captured = null;
+        _stockMovementRepository
+            .When(x => x.AddAsync(Arg.Any<StockMovement>(), Arg.Any<CancellationToken>()))
+            .Do(ci => captured = ci.Arg<StockMovement>());
+
+        await _sut.Handle(CreateCommand(sourceType: "SALE"), CancellationToken.None);
+
+        captured.Should().NotBeNull();
+        captured!.Direction.Should().Be(Direction.Out);
+        captured.SourceType.Should().Be(SourceType.Sale);
+    }
+
+    [Fact]
+    public async Task Handle_WithAdjustmentSource_UsesProvidedDirection()
+    {
+        StockMovement? captured = null;
+        _stockMovementRepository
+            .When(x => x.AddAsync(Arg.Any<StockMovement>(), Arg.Any<CancellationToken>()))
+            .Do(ci => captured = ci.Arg<StockMovement>());
+
+        await _sut.Handle(
+            CreateCommand(sourceType: "ADJUSTMENT", direction: "OUT"),
+            CancellationToken.None
+        );
+
+        captured.Should().NotBeNull();
+        captured!.Direction.Should().Be(Direction.Out);
+        captured.SourceType.Should().Be(SourceType.Adjustment);
+    }
+
+    [Fact]
     public async Task Handle_WhenStockLevelExists_UpdatesExistingStockLevel()
     {
         var existing = StockLevel.Create(new StockItemId(_itemId), new WarehouseId(_warehouseId));
@@ -135,22 +204,6 @@ public class ReceiveBatchCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WithDuplicateReceiptNumber_ThrowsAndDoesNotPersist()
-    {
-        _batchRepository
-            .ExistsByReceiptNumberAsync("RCV-001", Arg.Any<CancellationToken>())
-            .Returns(true);
-
-        var act = async () => await _sut.Handle(CreateCommand(), CancellationToken.None);
-
-        var exception = await act.Should().ThrowAsync<ValidationException>();
-        exception.Which.Errors.Should().ContainSingle(e => e.Contains("already exists"));
-        await _batchRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
-        await _stockLevelRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
-        await _stockLevelRepository.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
-    }
-
-    [Fact]
     public async Task Handle_WithInactiveItem_ThrowsAndDoesNotPersist()
     {
         _stockItemRepository
@@ -164,6 +217,7 @@ public class ReceiveBatchCommandHandlerTests
         await _batchRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
         await _stockLevelRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
         await _stockLevelRepository.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
+        await _stockMovementRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
     }
 
     [Fact]
@@ -182,6 +236,7 @@ public class ReceiveBatchCommandHandlerTests
         await _batchRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
         await _stockLevelRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
         await _stockLevelRepository.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
+        await _stockMovementRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
     }
 
     [Fact]
@@ -194,5 +249,6 @@ public class ReceiveBatchCommandHandlerTests
         await _batchRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
         await _stockLevelRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
         await _stockLevelRepository.DidNotReceiveWithAnyArgs().UpdateAsync(default!, default);
+        await _stockMovementRepository.DidNotReceiveWithAnyArgs().AddAsync(default!, default);
     }
 }

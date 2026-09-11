@@ -58,12 +58,6 @@ internal sealed class BatchConfiguration : IEntityTypeConfiguration<Batch>
             .HasConversion(status => status.Value, value => BatchStatus.FromValue(value));
 
         builder
-            .Property(b => b.ReceiptNumber)
-            .HasColumnName("receipt_number")
-            .IsRequired()
-            .HasMaxLength(50);
-
-        builder
             .Property(b => b.RecordedBy)
             .HasColumnName("recorded_by")
             .HasMaxLength(100)
@@ -76,11 +70,6 @@ internal sealed class BatchConfiguration : IEntityTypeConfiguration<Batch>
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.Property(b => b.UpdatedAt).HasColumnName("updated_at").IsRequired(false);
-
-        builder
-            .HasIndex(b => b.ReceiptNumber)
-            .IsUnique()
-            .HasDatabaseName("ix_batches_receipt_number_unique");
 
         builder
             .HasIndex(b => new { b.ItemId, b.WarehouseId })

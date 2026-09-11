@@ -13,8 +13,7 @@ public class BatchTests
     private static Batch CreateBatch(
         DateTime? receivedAt = null,
         decimal receivedQty = 100,
-        decimal unitCost = 10,
-        string? receiptNumber = "RCV-001"
+        decimal unitCost = 10
     ) =>
         Batch.Create(
             ItemId,
@@ -22,7 +21,6 @@ public class BatchTests
             receivedAt ?? DateTime.UtcNow,
             receivedQty,
             unitCost,
-            receiptNumber!,
             "budi"
         );
 
@@ -36,7 +34,6 @@ public class BatchTests
         batch.ReceivedQty.Should().Be(100);
         batch.RemainingQty.Should().Be(100);
         batch.UnitCost.Should().Be(10);
-        batch.ReceiptNumber.Should().Be("RCV-001");
         batch.RecordedBy.Should().Be("budi");
         batch.Status.Should().Be(BatchStatus.Active);
         batch.Id.Should().NotBeNull();
@@ -74,25 +71,6 @@ public class BatchTests
         var act = () => CreateBatch(receivedAt: DateTime.UtcNow.AddDays(1));
 
         act.Should().Throw<ArgumentOutOfRangeException>();
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData(null)]
-    public void Create_WithNullOrWhiteSpaceReceiptNumber_Throws(string? receiptNumber)
-    {
-        var act = () => CreateBatch(receiptNumber: receiptNumber);
-
-        act.Should().Throw<ArgumentException>();
-    }
-
-    [Fact]
-    public void Create_TrimsReceiptNumber()
-    {
-        var batch = CreateBatch(receiptNumber: "  RCV-777  ");
-
-        batch.ReceiptNumber.Should().Be("RCV-777");
     }
 
     [Fact]

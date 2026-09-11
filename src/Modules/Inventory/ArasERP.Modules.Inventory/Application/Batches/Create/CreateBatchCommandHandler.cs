@@ -3,23 +3,25 @@ using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Domain.Batches;
 using ArasERP.Modules.Inventory.Domain.StockItems;
 using ArasERP.Modules.Inventory.Domain.StockLevels;
+using ArasERP.Modules.Inventory.Domain.StockMovements;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using FluentValidation;
 using ValidationException = ArasERP.BuildingBlocks.Application.ValidationException;
 
-namespace ArasERP.Modules.Inventory.Application.Batches.Receive;
+namespace ArasERP.Modules.Inventory.Application.Batches.Create;
 
-public sealed class ReceiveBatchCommandHandler(
+public sealed class CreateBatchCommandHandler(
     IBatchRepository batchRepository,
     IStockItemRepository stockItemRepository,
     IWarehouseRepository warehouseRepository,
     IStockLevelRepository stockLevelRepository,
+    IStockMovementRepository stockMovementRepository,
     IInventoryUnitOfWork unitOfWork,
-    IValidator<ReceiveBatchCommand> validator
-) : ICommandHandler<ReceiveBatchCommand>
+    IValidator<CreateBatchCommand> validator
+) : ICommandHandler<CreateBatchCommand>
 {
     public async Task Handle(
-        ReceiveBatchCommand command,
+        CreateBatchCommand command,
         CancellationToken cancellationToken = default
     )
     {
@@ -27,17 +29,6 @@ public sealed class ReceiveBatchCommandHandler(
         if (!validationResult.IsValid)
         {
             throw new ValidationException([.. validationResult.Errors.Select(e => e.ErrorMessage)]);
-        }
-
-        var isReceiptExists = await batchRepository.ExistsByReceiptNumberAsync(
-            command.ReceiptNumber,
-            cancellationToken
-        );
-        if (isReceiptExists)
-        {
-            throw new ValidationException(
-                $"A batch with receipt number '{command.ReceiptNumber}' already exists."
-            );
         }
 
         var itemId = new StockItemId(command.ItemId);
@@ -61,6 +52,9 @@ public sealed class ReceiveBatchCommandHandler(
             );
         }
 
+        var sourceType = SourceType.FromValue(command.SourceType);
+        var direction = sourceType.DefaultDirection ?? Direction.FromValue(command.Direction!);
+
         await unitOfWork.ExecuteInTransactionAsync(
             async () =>
             {
@@ -70,11 +64,22 @@ public sealed class ReceiveBatchCommandHandler(
                     command.ReceivedAt,
                     command.ReceivedQty,
                     command.UnitCost,
-                    command.ReceiptNumber,
                     command.RecordedBy
                 );
 
                 await batchRepository.AddAsync(batch, cancellationToken);
+
+                var movement = StockMovement.Create(
+                    itemId,
+                    warehouseId,
+                    direction,
+                    command.ReceivedQty,
+                    sourceType,
+                    batchId: batch.Id,
+                    note: command.Note,
+                    createdBy: command.RecordedBy
+                );
+                await stockMovementRepository.AddAsync(movement, cancellationToken);
 
                 var stockLevel = await stockLevelRepository.GetByKeyAsync(
                     itemId,

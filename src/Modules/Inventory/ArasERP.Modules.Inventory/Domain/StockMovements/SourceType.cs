@@ -30,6 +30,19 @@ public sealed class SourceType : ValueObject
 
     public string Value { get; }
 
+    public Direction? DefaultDirection =>
+        this switch
+        {
+            _ when this == Purchase => Direction.In,
+            _ when this == CustomerReturn => Direction.In,
+            _ when this == LoanReturn => Direction.In,
+            _ when this == TransferIn => Direction.In,
+            _ when this == Sale => Direction.Out,
+            _ when this == LoanOut => Direction.Out,
+            _ when this == TransferOut => Direction.Out,
+            _ => null,
+        };
+
     private SourceType(string value)
     {
         Value = value;
@@ -48,7 +61,8 @@ public sealed class SourceType : ValueObject
         );
     }
 
-    public static bool IsValid(string value) => _cache.ContainsKey(value);
+    public static bool IsValid(string? value) =>
+        !string.IsNullOrWhiteSpace(value) && _cache.ContainsKey(value);
 
     public static IEnumerable<SourceType> List() => _cache.Values.Distinct();
 

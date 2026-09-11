@@ -36,7 +36,8 @@ public sealed class Direction : ValueObject
         );
     }
 
-    public static bool IsValid(string value) => _cache.ContainsKey(value);
+    public static bool IsValid(string? value) =>
+        !string.IsNullOrWhiteSpace(value) && _cache.ContainsKey(value);
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {
