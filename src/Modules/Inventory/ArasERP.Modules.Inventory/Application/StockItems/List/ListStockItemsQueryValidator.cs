@@ -4,7 +4,16 @@ namespace ArasERP.Modules.Inventory.Application.StockItems.List;
 
 public sealed class ListStockItemsQueryValidator : AbstractValidator<ListStockItemsQuery>
 {
-    private static readonly string[] AllowedOrderBy = { "Sku", "Name", "CreatedAt", "UpdatedAt" };
+    private static readonly string[] AllowedOrderBy =
+    {
+        "Sku",
+        "Name",
+        "IsActive",
+        "CostingMethod",
+        "OnHandQty",
+        "CreatedAt",
+        "UpdatedAt",
+    };
 
     public ListStockItemsQueryValidator()
     {
@@ -15,7 +24,7 @@ public sealed class ListStockItemsQueryValidator : AbstractValidator<ListStockIt
         RuleFor(x => x.Search).MaximumLength(100);
 
         RuleFor(x => x.OrderBy)
-            .Must(x => string.IsNullOrWhiteSpace(x) || AllowedOrderBy.Contains(x))
+            .Must(x => string.IsNullOrWhiteSpace(x) || AllowedOrderBy.Contains(x, StringComparer.OrdinalIgnoreCase))
             .WithMessage("Invalid order by field.");
 
         RuleFor(x => x.WarehouseId)

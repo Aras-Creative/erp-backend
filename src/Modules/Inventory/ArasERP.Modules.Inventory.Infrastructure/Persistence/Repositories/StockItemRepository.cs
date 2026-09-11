@@ -59,7 +59,10 @@ public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockIt
         if (!string.IsNullOrWhiteSpace(filter.Search))
         {
             var search = filter.Search.Trim();
-            itemQuery = itemQuery.Where(x => x.Sku.Contains(search) || x.Name.Contains(search));
+            itemQuery = itemQuery.Where(x =>
+                EF.Functions.ILike(x.Sku, $"%{search}%")
+                || EF.Functions.ILike(x.Name, $"%{search}%")
+            );
         }
 
         if (filter.IsActive.HasValue)
@@ -99,6 +102,8 @@ public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockIt
                 row.Item.Unit,
                 row.Item.IsActive,
                 CostingMethod = row.Item.CostingMethod.Value,
+                row.Item.CreatedAt,
+                row.Item.UpdatedAt,
                 WarehouseId = row.Level != null ? row.Level.WarehouseId.Value : (Guid?)null,
                 WarehouseName = row.Warehouse != null ? row.Warehouse.Name : null,
                 OnHandQty = row.Level != null ? row.Level.OnHandQty : 0m,
@@ -111,9 +116,29 @@ public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockIt
                 ? projected.OrderByDescending(x => x.Sku)
                 : projected.OrderBy(x => x.Sku),
 
+            "name" => filter.Descending
+                ? projected.OrderByDescending(x => x.Name)
+                : projected.OrderBy(x => x.Name),
+
+            "isactive" => filter.Descending
+                ? projected.OrderByDescending(x => x.IsActive)
+                : projected.OrderBy(x => x.IsActive),
+
             "costingmethod" => filter.Descending
                 ? projected.OrderByDescending(x => x.CostingMethod)
                 : projected.OrderBy(x => x.CostingMethod),
+
+            "onhandqty" => filter.Descending
+                ? projected.OrderByDescending(x => x.OnHandQty)
+                : projected.OrderBy(x => x.OnHandQty),
+
+            "createdat" => filter.Descending
+                ? projected.OrderByDescending(x => x.CreatedAt)
+                : projected.OrderBy(x => x.CreatedAt),
+
+            "updatedat" => filter.Descending
+                ? projected.OrderByDescending(x => x.UpdatedAt)
+                : projected.OrderBy(x => x.UpdatedAt),
 
             _ => filter.Descending
                 ? projected.OrderByDescending(x => x.Name)

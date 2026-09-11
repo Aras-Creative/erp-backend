@@ -42,7 +42,7 @@ internal sealed class StockLevelConfiguration : IEntityTypeConfiguration<StockLe
             .IsRequired()
             .HasPrecision(18, 4);
 
-        builder.Property(l => l.RowVersion).HasColumnName("row_version").IsRowVersion();
+        builder.Property(l => l.RowVersion).HasColumnName("xmin").IsRowVersion();
 
         builder
             .Property(l => l.UpdatedAt)

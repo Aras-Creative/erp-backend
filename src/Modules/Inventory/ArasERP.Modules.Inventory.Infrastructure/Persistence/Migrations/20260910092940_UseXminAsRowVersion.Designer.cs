@@ -3,6 +3,7 @@ using System;
 using ArasERP.Modules.Inventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260910092940_UseXminAsRowVersion")]
+    partial class UseXminAsRowVersion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,73 +237,6 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_stock_levels_item_warehouse_unique");
 
                     b.ToTable("stock_levels", (string)null);
-                });
-
-            modelBuilder.Entity("ArasERP.Modules.Inventory.Domain.StockMovements.StockMovement", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid?>("BatchId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("batch_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("created_by");
-
-                    b.Property<string>("Direction")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("direction");
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("item_id");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("note");
-
-                    b.Property<decimal>("Quantity")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("quantity");
-
-                    b.Property<Guid?>("SourceReferenceId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("source_reference_id");
-
-                    b.Property<string>("SourceType")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("source_type");
-
-                    b.Property<Guid>("WarehouseId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("warehouse_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SourceReferenceId")
-                        .HasDatabaseName("ix_stock_movements_source_reference");
-
-                    b.HasIndex("ItemId", "CreatedAt")
-                        .HasDatabaseName("ix_stock_movements_item_created");
-
-                    b.HasIndex("WarehouseId", "CreatedAt")
-                        .HasDatabaseName("ix_stock_movements_warehouse_created");
-
-                    b.ToTable("stock_movements", (string)null);
                 });
 
             modelBuilder.Entity("ArasERP.Modules.Inventory.Domain.Warehouses.Warehouse", b =>
