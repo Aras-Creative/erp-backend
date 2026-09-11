@@ -1,6 +1,6 @@
 using ArasERP.BuildingBlocks.Application;
 using ArasERP.BuildingBlocks.Presentation;
-using ArasERP.Modules.Inventory.Api.Warehouses;
+using ArasERP.Modules.Inventory.Api.Response;
 using ArasERP.Modules.Inventory.Application.Warehouses.Create;
 using ArasERP.Modules.Inventory.Application.Warehouses.Delete;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace ArasERP.Modules.Inventory.Api.Warehouses.Endpoints;
+namespace ArasERP.Modules.Inventory.Api.Endpoints;
 
 public static class WarehousesEndpoints
 {

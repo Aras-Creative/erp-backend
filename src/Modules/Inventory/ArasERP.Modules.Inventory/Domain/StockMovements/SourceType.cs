@@ -30,7 +30,7 @@ public sealed class SourceType : ValueObject
 
     public string Value { get; }
 
-    public Direction? DefaultDirection =>
+    public Direction DefaultDirection =>
         this switch
         {
             _ when this == Purchase => Direction.In,
@@ -40,8 +40,11 @@ public sealed class SourceType : ValueObject
             _ when this == Sale => Direction.Out,
             _ when this == LoanOut => Direction.Out,
             _ when this == TransferOut => Direction.Out,
-            _ => null,
+            _ => Direction.In,
         };
+
+    public static readonly IReadOnlyList<SourceType> BatchCreationSources =
+        [Purchase, CustomerReturn, LoanReturn];
 
     private SourceType(string value)
     {
@@ -63,6 +66,11 @@ public sealed class SourceType : ValueObject
 
     public static bool IsValid(string? value) =>
         !string.IsNullOrWhiteSpace(value) && _cache.ContainsKey(value);
+
+    public static bool IsValidForBatchCreation(string? value) =>
+        !string.IsNullOrWhiteSpace(value)
+        && _cache.TryGetValue(value, out var sourceType)
+        && BatchCreationSources.Contains(sourceType);
 
     public static IEnumerable<SourceType> List() => _cache.Values.Distinct();
 

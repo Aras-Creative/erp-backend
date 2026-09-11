@@ -61,6 +61,12 @@ internal sealed class StockMovementConfiguration : IEntityTypeConfiguration<Stoc
             .IsRequired(false);
 
         builder
+            .Property(m => m.ExternalReferenceNo)
+            .HasColumnName("external_reference_no")
+            .HasMaxLength(100)
+            .IsRequired(false);
+
+        builder
             .Property(m => m.Note)
             .HasColumnName("note")
             .HasMaxLength(500)
@@ -73,8 +79,13 @@ internal sealed class StockMovementConfiguration : IEntityTypeConfiguration<Stoc
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder
-            .Property(m => m.CreatedBy)
-            .HasColumnName("created_by")
+            .Property(m => m.RecordedBy)
+            .HasColumnName("recorded_by")
+            .IsRequired();
+
+        builder
+            .Property(m => m.ReceivedBy)
+            .HasColumnName("received_by")
             .HasMaxLength(100)
             .IsRequired(false);
 

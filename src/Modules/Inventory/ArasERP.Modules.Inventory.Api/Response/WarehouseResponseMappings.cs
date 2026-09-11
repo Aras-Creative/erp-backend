@@ -3,7 +3,7 @@ using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetOptions;
 using ArasERP.Modules.Inventory.Application.Warehouses.List;
 
-namespace ArasERP.Modules.Inventory.Api.Warehouses;
+namespace ArasERP.Modules.Inventory.Api.Response;
 
 public static class WarehouseResponseMappings
 {

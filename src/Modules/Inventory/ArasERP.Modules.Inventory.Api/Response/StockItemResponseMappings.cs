@@ -1,7 +1,7 @@
 using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.StockItems.List;
 
-namespace ArasERP.Modules.Inventory.Api.StockItems;
+namespace ArasERP.Modules.Inventory.Api.Response;
 
 public static class StockItemResponseMappings
 {

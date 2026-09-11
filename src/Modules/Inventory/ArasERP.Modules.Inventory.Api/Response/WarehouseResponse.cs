@@ -1,4 +1,4 @@
-namespace ArasERP.Modules.Inventory.Api.Warehouses;
+namespace ArasERP.Modules.Inventory.Api.Response;
 
 public sealed class WarehouseResponse
 {

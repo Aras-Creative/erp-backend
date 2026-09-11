@@ -13,8 +13,7 @@ public class CreateBatchCommandValidatorTests
         decimal receivedQty = 100,
         decimal unitCost = 10,
         DateTime? receivedAt = null,
-        string? sourceType = "PURCHASE",
-        string? direction = null
+        string? sourceType = "PURCHASE"
     ) =>
         new()
         {
@@ -24,7 +23,7 @@ public class CreateBatchCommandValidatorTests
             UnitCost = unitCost,
             ReceivedAt = receivedAt ?? DateTime.UtcNow,
             SourceType = sourceType!,
-            Direction = direction,
+            RecordedBy = Guid.NewGuid(),
         };
 
     [Fact]
@@ -105,37 +104,27 @@ public class CreateBatchCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("UP")]
-    public void Validate_AdjustmentWithoutValidDirection_ReturnsError(string? direction)
+    [InlineData("SALE")]
+    [InlineData("ADJUSTMENT")]
+    [InlineData("LOAN_OUT")]
+    [InlineData("TRANSFER_OUT")]
+    public void Validate_WithOutboundSourceType_ReturnsError(string sourceType)
     {
-        var result = _sut.Validate(
-            CreateCommand(sourceType: "ADJUSTMENT", direction: direction)
-        );
+        var result = _sut.Validate(CreateCommand(sourceType: sourceType));
 
         result.IsValid.Should().BeFalse();
         result
             .Errors.Should()
-            .ContainSingle(e => e.PropertyName == nameof(CreateBatchCommand.Direction));
+            .ContainSingle(e => e.PropertyName == nameof(CreateBatchCommand.SourceType));
     }
 
     [Theory]
-    [InlineData("IN")]
-    [InlineData("OUT")]
-    public void Validate_AdjustmentWithValidDirection_ReturnsNoErrors(string direction)
+    [InlineData("PURCHASE")]
+    [InlineData("CUSTOMER_RETURN")]
+    [InlineData("LOAN_RETURN")]
+    public void Validate_WithInboundSourceType_ReturnsNoErrors(string sourceType)
     {
-        var result = _sut.Validate(
-            CreateCommand(sourceType: "ADJUSTMENT", direction: direction)
-        );
-
-        result.IsValid.Should().BeTrue();
-    }
-
-    [Fact]
-    public void Validate_SaleWithoutDirection_ReturnsNoErrors()
-    {
-        var result = _sut.Validate(CreateCommand(sourceType: "SALE"));
+        var result = _sut.Validate(CreateCommand(sourceType: sourceType));
 
         result.IsValid.Should().BeTrue();
     }

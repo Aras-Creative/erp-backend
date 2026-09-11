@@ -1,6 +1,6 @@
 using ArasERP.BuildingBlocks.Application;
 using ArasERP.BuildingBlocks.Presentation;
-using ArasERP.Modules.Inventory.Api.StockItems;
+using ArasERP.Modules.Inventory.Api.Response;
 using ArasERP.Modules.Inventory.Application.StockItems.Create;
 using ArasERP.Modules.Inventory.Application.StockItems.List;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace ArasERP.Modules.Inventory.Api.StockItems.Endpoints;
+namespace ArasERP.Modules.Inventory.Api.Endpoints;
 
 public static class StockItemEndpoints
 {

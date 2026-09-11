@@ -28,30 +28,20 @@ public sealed class CreateBatchCommandValidator : AbstractValidator<CreateBatchC
         RuleFor(x => x.SourceType)
             .NotEmpty()
             .WithMessage("'SourceType' is required.")
-            .Must(SourceType.IsValid)
-            .WithMessage("'SourceType' is invalid.")
+            .Must(SourceType.IsValidForBatchCreation)
+            .WithMessage(
+                "'SourceType' must be one of: PURCHASE, CUSTOMER_RETURN, LOAN_RETURN."
+            )
             .When(
                 x => !string.IsNullOrWhiteSpace(x.SourceType),
                 ApplyConditionTo.CurrentValidator
             );
 
-        RuleFor(x => x.Direction)
-            .Must(
-                (command, direction) =>
-                    !string.Equals(
-                        command.SourceType,
-                        "adjustment",
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                    || (!string.IsNullOrWhiteSpace(direction) && Direction.IsValid(direction))
-            )
-            .WithMessage(
-                "'Direction' is required and must be IN or OUT when SourceType is ADJUSTMENT."
-            );
+        RuleFor(x => x.ExternalReferenceNo).MaximumLength(100);
 
         RuleFor(x => x.Note).MaximumLength(500);
 
-        RuleFor(x => x.RecordedBy).MaximumLength(100);
+        RuleFor(x => x.ReceivedBy).MaximumLength(100);
     }
 
     private static bool BePastOrNow(CreateBatchCommand command, DateTime receivedAt) =>

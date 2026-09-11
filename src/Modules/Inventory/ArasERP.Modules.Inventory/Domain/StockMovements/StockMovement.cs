@@ -14,9 +14,11 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
     public decimal Quantity { get; private set; }
     public SourceType SourceType { get; private set; } = null!;
     public Guid? SourceReferenceId { get; private set; }
+    public string? ExternalReferenceNo { get; private set; }
     public string? Note { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public string? CreatedBy { get; private set; }
+    public Guid RecordedBy { get; private set; }
+    public string? ReceivedBy { get; private set; }
 
     private StockMovement(
         StockMovementId id,
@@ -26,9 +28,11 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
         decimal quantity,
         SourceType sourceType,
         Guid? sourceReferenceId,
+        string? externalReferenceNo,
         BatchId? batchId,
         string? note,
-        string? createdBy
+        Guid recordedBy,
+        string? receivedBy
     )
         : base(id)
     {
@@ -38,10 +42,12 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
         Quantity = quantity;
         SourceType = sourceType;
         SourceReferenceId = sourceReferenceId;
+        ExternalReferenceNo = externalReferenceNo;
         BatchId = batchId;
         Note = note;
         CreatedAt = DateTime.UtcNow;
-        CreatedBy = createdBy;
+        RecordedBy = recordedBy;
+        ReceivedBy = receivedBy;
     }
 
     private StockMovement() { }
@@ -53,9 +59,11 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
         decimal quantity,
         SourceType sourceType,
         Guid? sourceReferenceId = null,
+        string? externalReferenceNo = null,
         BatchId? batchId = null,
         string? note = null,
-        string? createdBy = null
+        Guid recordedBy = default,
+        string? receivedBy = null
     )
     {
         ArgumentNullException.ThrowIfNull(itemId);
@@ -72,9 +80,11 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
             quantity,
             sourceType,
             sourceReferenceId,
+            externalReferenceNo?.Trim(),
             batchId,
             note?.Trim(),
-            createdBy
+            recordedBy,
+            receivedBy?.Trim()
         );
     }
 }

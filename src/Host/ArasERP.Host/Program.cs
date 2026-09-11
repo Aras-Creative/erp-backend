@@ -6,9 +6,7 @@ using ArasERP.Modules.Address.Api.Endpoints;
 using ArasERP.Modules.Address.Infrastructure;
 using ArasERP.Modules.Address.Infrastructure.Persistence;
 using ArasERP.Modules.Inventory;
-using ArasERP.Modules.Inventory.Api.Batches.Endpoints;
-using ArasERP.Modules.Inventory.Api.StockItems.Endpoints;
-using ArasERP.Modules.Inventory.Api.Warehouses.Endpoints;
+using ArasERP.Modules.Inventory.Api.Endpoints;
 using ArasERP.Modules.Inventory.Infrastructure;
 using ArasERP.Modules.Inventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -70,5 +68,6 @@ app.MapWarehouseEndpoints();
 app.MapAddressEndpoints();
 app.MapStockItemEndpoints();
 app.MapBatchEndpoints();
+app.MapStockMovementEndpoints();
 
 app.Run();

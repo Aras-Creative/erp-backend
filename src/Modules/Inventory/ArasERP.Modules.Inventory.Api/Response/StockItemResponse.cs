@@ -1,4 +1,4 @@
-namespace ArasERP.Modules.Inventory.Api.StockItems;
+namespace ArasERP.Modules.Inventory.Api.Response;
 
 public sealed class StockItemResponse
 {

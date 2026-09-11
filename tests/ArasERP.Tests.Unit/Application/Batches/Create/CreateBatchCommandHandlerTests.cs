@@ -52,11 +52,13 @@ public class CreateBatchCommandHandlerTests
             .Returns(ci => ci.Arg<Func<Task>>()());
     }
 
+    private readonly Guid _actorId = Guid.NewGuid();
+
     private CreateBatchCommand CreateCommand(
         decimal receivedQty = 100,
         decimal unitCost = 10,
         string sourceType = "PURCHASE",
-        string? direction = null,
+        string? externalReferenceNo = null,
         string? note = null
     ) =>
         new()
@@ -67,9 +69,10 @@ public class CreateBatchCommandHandlerTests
             UnitCost = unitCost,
             ReceivedAt = DateTime.UtcNow,
             SourceType = sourceType,
-            Direction = direction,
+            ExternalReferenceNo = externalReferenceNo,
             Note = note,
-            RecordedBy = "budi",
+            ReceivedBy = "budi",
+            RecordedBy = _actorId,
         };
 
     [Fact]
@@ -89,7 +92,6 @@ public class CreateBatchCommandHandlerTests
                     && b.ReceivedQty == 100
                     && b.RemainingQty == 100
                     && b.UnitCost == 10
-                    && b.RecordedBy == "budi"
                     && b.Status == BatchStatus.Active
                 ),
                 Arg.Any<CancellationToken>()
@@ -124,8 +126,8 @@ public class CreateBatchCommandHandlerTests
             .When(x => x.AddAsync(Arg.Any<StockMovement>(), Arg.Any<CancellationToken>()))
             .Do(ci => captured = ci.Arg<StockMovement>());
 
-        await _sut.Handle(
-            CreateCommand(note: "Received from supplier", sourceType: "PURCHASE"),
+await _sut.Handle(
+            CreateCommand(note: "Received from supplier", externalReferenceNo: "INV-SUPPLIER-00293"),
             CancellationToken.None
         );
 
@@ -141,41 +143,10 @@ public class CreateBatchCommandHandlerTests
         captured.SourceType.Should().Be(SourceType.Purchase);
         captured.BatchId.Should().NotBeNull();
         captured.SourceReferenceId.Should().BeNull();
+        captured.ExternalReferenceNo.Should().Be("INV-SUPPLIER-00293");
         captured.Note.Should().Be("Received from supplier");
-        captured.CreatedBy.Should().Be("budi");
-    }
-
-    [Fact]
-    public async Task Handle_WithSaleSource_RecordsOutboundSaleMovement()
-    {
-        StockMovement? captured = null;
-        _stockMovementRepository
-            .When(x => x.AddAsync(Arg.Any<StockMovement>(), Arg.Any<CancellationToken>()))
-            .Do(ci => captured = ci.Arg<StockMovement>());
-
-        await _sut.Handle(CreateCommand(sourceType: "SALE"), CancellationToken.None);
-
-        captured.Should().NotBeNull();
-        captured!.Direction.Should().Be(Direction.Out);
-        captured.SourceType.Should().Be(SourceType.Sale);
-    }
-
-    [Fact]
-    public async Task Handle_WithAdjustmentSource_UsesProvidedDirection()
-    {
-        StockMovement? captured = null;
-        _stockMovementRepository
-            .When(x => x.AddAsync(Arg.Any<StockMovement>(), Arg.Any<CancellationToken>()))
-            .Do(ci => captured = ci.Arg<StockMovement>());
-
-        await _sut.Handle(
-            CreateCommand(sourceType: "ADJUSTMENT", direction: "OUT"),
-            CancellationToken.None
-        );
-
-        captured.Should().NotBeNull();
-        captured!.Direction.Should().Be(Direction.Out);
-        captured.SourceType.Should().Be(SourceType.Adjustment);
+        captured.RecordedBy.Should().Be(_actorId);
+        captured.ReceivedBy.Should().Be("budi");
     }
 
     [Fact]

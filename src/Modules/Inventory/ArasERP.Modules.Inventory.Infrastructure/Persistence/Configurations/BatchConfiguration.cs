@@ -58,12 +58,6 @@ internal sealed class BatchConfiguration : IEntityTypeConfiguration<Batch>
             .HasConversion(status => status.Value, value => BatchStatus.FromValue(value));
 
         builder
-            .Property(b => b.RecordedBy)
-            .HasColumnName("recorded_by")
-            .HasMaxLength(100)
-            .IsRequired(false);
-
-        builder
             .Property(b => b.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired()

@@ -1,8 +1,6 @@
-using ArasERP.BuildingBlocks.Application;
+namespace ArasERP.Modules.Inventory.Api.Request;
 
-namespace ArasERP.Modules.Inventory.Application.Batches.Create;
-
-public sealed class CreateBatchCommand : ICommand
+public sealed class CreateBatchRequest
 {
     public required Guid ItemId { get; init; }
     public required Guid WarehouseId { get; init; }
@@ -13,5 +11,4 @@ public sealed class CreateBatchCommand : ICommand
     public string? ExternalReferenceNo { get; init; }
     public string? Note { get; init; }
     public string? ReceivedBy { get; init; }
-    public required Guid RecordedBy { get; init; }
 }

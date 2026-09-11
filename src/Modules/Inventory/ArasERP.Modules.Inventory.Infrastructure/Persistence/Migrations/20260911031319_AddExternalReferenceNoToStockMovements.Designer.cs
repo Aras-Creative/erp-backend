@@ -3,6 +3,7 @@ using System;
 using ArasERP.Modules.Inventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260911031319_AddExternalReferenceNoToStockMovements")]
+    partial class AddExternalReferenceNoToStockMovements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,6 +50,11 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                         .HasPrecision(18, 4)
                         .HasColumnType("numeric(18,4)")
                         .HasColumnName("received_qty");
+
+                    b.Property<string>("RecordedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("recorded_by");
 
                     b.Property<decimal>("RemainingQty")
                         .HasPrecision(18, 4)
@@ -237,6 +245,11 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("created_by");
+
                     b.Property<string>("Direction")
                         .IsRequired()
                         .HasColumnType("text")
@@ -260,15 +273,6 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                         .HasPrecision(18, 4)
                         .HasColumnType("numeric(18,4)")
                         .HasColumnName("quantity");
-
-                    b.Property<string>("ReceivedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("received_by");
-
-                    b.Property<Guid>("RecordedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("recorded_by");
 
                     b.Property<Guid?>("SourceReferenceId")
                         .HasColumnType("uuid")

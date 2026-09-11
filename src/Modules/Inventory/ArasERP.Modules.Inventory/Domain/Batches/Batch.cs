@@ -13,7 +13,6 @@ public sealed class Batch : AggregateRoot<BatchId>
     public decimal RemainingQty { get; private set; }
     public decimal UnitCost { get; private set; }
     public BatchStatus Status { get; private set; } = null!;
-    public string? RecordedBy { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
@@ -23,8 +22,7 @@ public sealed class Batch : AggregateRoot<BatchId>
         WarehouseId warehouseId,
         DateTime receivedAt,
         decimal receivedQty,
-        decimal unitCost,
-        string? recordedBy
+        decimal unitCost
     )
         : base(id)
     {
@@ -35,7 +33,6 @@ public sealed class Batch : AggregateRoot<BatchId>
         RemainingQty = receivedQty;
         UnitCost = unitCost;
         Status = BatchStatus.Active;
-        RecordedBy = recordedBy;
         CreatedAt = DateTime.UtcNow;
     }
 
@@ -46,8 +43,7 @@ public sealed class Batch : AggregateRoot<BatchId>
         WarehouseId warehouseId,
         DateTime receivedAt,
         decimal receivedQty,
-        decimal unitCost,
-        string? recordedBy = null
+        decimal unitCost
     )
     {
         ArgumentNullException.ThrowIfNull(itemId);
@@ -66,8 +62,7 @@ public sealed class Batch : AggregateRoot<BatchId>
             warehouseId,
             receivedAt,
             receivedQty,
-            unitCost,
-            recordedBy
+            unitCost
         );
     }
 

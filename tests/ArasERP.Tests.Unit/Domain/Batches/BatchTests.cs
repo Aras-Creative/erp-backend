@@ -15,14 +15,7 @@ public class BatchTests
         decimal receivedQty = 100,
         decimal unitCost = 10
     ) =>
-        Batch.Create(
-            ItemId,
-            WarehouseId,
-            receivedAt ?? DateTime.UtcNow,
-            receivedQty,
-            unitCost,
-            "budi"
-        );
+        Batch.Create(ItemId, WarehouseId, receivedAt ?? DateTime.UtcNow, receivedQty, unitCost);
 
     [Fact]
     public void Create_WithValidData_SetsProperties()
@@ -34,7 +27,6 @@ public class BatchTests
         batch.ReceivedQty.Should().Be(100);
         batch.RemainingQty.Should().Be(100);
         batch.UnitCost.Should().Be(10);
-        batch.RecordedBy.Should().Be("budi");
         batch.Status.Should().Be(BatchStatus.Active);
         batch.Id.Should().NotBeNull();
     }

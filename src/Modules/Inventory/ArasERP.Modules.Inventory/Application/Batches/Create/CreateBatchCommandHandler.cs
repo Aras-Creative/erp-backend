@@ -53,7 +53,8 @@ public sealed class CreateBatchCommandHandler(
         }
 
         var sourceType = SourceType.FromValue(command.SourceType);
-        var direction = sourceType.DefaultDirection ?? Direction.FromValue(command.Direction!);
+        var direction = sourceType.DefaultDirection;
+        var recordedBy = command.RecordedBy;
 
         await unitOfWork.ExecuteInTransactionAsync(
             async () =>
@@ -63,8 +64,7 @@ public sealed class CreateBatchCommandHandler(
                     warehouseId,
                     command.ReceivedAt,
                     command.ReceivedQty,
-                    command.UnitCost,
-                    command.RecordedBy
+                    command.UnitCost
                 );
 
                 await batchRepository.AddAsync(batch, cancellationToken);
@@ -75,9 +75,11 @@ public sealed class CreateBatchCommandHandler(
                     direction,
                     command.ReceivedQty,
                     sourceType,
+                    externalReferenceNo: command.ExternalReferenceNo,
                     batchId: batch.Id,
                     note: command.Note,
-                    createdBy: command.RecordedBy
+                    recordedBy: recordedBy,
+                    receivedBy: command.ReceivedBy
                 );
                 await stockMovementRepository.AddAsync(movement, cancellationToken);
 
@@ -89,12 +91,12 @@ public sealed class CreateBatchCommandHandler(
                 if (stockLevel is null)
                 {
                     stockLevel = StockLevel.Create(itemId, warehouseId);
-                    stockLevel.Receive(command.ReceivedQty, command.RecordedBy);
+                    stockLevel.Receive(command.ReceivedQty);
                     await stockLevelRepository.AddAsync(stockLevel, cancellationToken);
                 }
                 else
                 {
-                    stockLevel.Receive(command.ReceivedQty, command.RecordedBy);
+                    stockLevel.Receive(command.ReceivedQty);
                     await stockLevelRepository.UpdateAsync(stockLevel, cancellationToken);
                 }
             },
