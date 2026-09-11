@@ -1,4 +1,3 @@
-using ArasERP.Modules.Inventory.Domain.StockMovements;
 using FluentValidation;
 
 namespace ArasERP.Modules.Inventory.Application.Batches.Create;
@@ -26,16 +25,8 @@ public sealed class CreateBatchCommandValidator : AbstractValidator<CreateBatchC
             .WithMessage("'ReceivedAt' cannot be in the future.");
 
         RuleFor(x => x.SourceType)
-            .NotEmpty()
-            .WithMessage("'SourceType' is required.")
-            .Must(SourceType.IsValidForBatchCreation)
-            .WithMessage(
-                "'SourceType' must be one of: PURCHASE, CUSTOMER_RETURN, LOAN_RETURN."
-            )
-            .When(
-                x => !string.IsNullOrWhiteSpace(x.SourceType),
-                ApplyConditionTo.CurrentValidator
-            );
+            .IsInEnum()
+            .WithMessage("'SourceType' must be one of: PURCHASE, CUSTOMER_RETURN, LOAN_RETURN.");
 
         RuleFor(x => x.ExternalReferenceNo).MaximumLength(100);
 

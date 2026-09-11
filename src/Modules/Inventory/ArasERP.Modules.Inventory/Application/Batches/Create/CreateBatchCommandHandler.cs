@@ -52,7 +52,7 @@ public sealed class CreateBatchCommandHandler(
             );
         }
 
-        var sourceType = SourceType.FromValue(command.SourceType);
+        var sourceType = SourceType.FromValue(command.SourceType.ToString());
         var direction = sourceType.DefaultDirection;
         var recordedBy = command.RecordedBy;
 

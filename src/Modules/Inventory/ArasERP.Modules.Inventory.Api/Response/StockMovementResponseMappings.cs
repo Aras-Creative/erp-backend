@@ -14,6 +14,7 @@ public static class StockMovementResponseMappings
         {
             Id = item.Id,
             ItemId = item.ItemId,
+            ItemName = item.ItemName,
             WarehouseId = item.WarehouseId,
             BatchId = item.BatchId,
             Direction = item.Direction,

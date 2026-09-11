@@ -23,6 +23,7 @@ public class ListStockMovementsQueryHandlerTests
         {
             Id = Guid.NewGuid(),
             ItemId = Guid.NewGuid(),
+            ItemName = "Rice 5kg",
             WarehouseId = Guid.NewGuid(),
             BatchId = Guid.NewGuid(),
             Direction = "IN",

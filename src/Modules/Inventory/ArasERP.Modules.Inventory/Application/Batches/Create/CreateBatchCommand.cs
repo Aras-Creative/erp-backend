@@ -9,7 +9,7 @@ public sealed class CreateBatchCommand : ICommand
     public required decimal ReceivedQty { get; init; }
     public required decimal UnitCost { get; init; }
     public required DateTime ReceivedAt { get; init; }
-    public required string SourceType { get; init; }
+    public required SourceTypeEnum SourceType { get; init; }
     public string? ExternalReferenceNo { get; init; }
     public string? Note { get; init; }
     public string? ReceivedBy { get; init; }

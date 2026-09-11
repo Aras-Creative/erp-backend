@@ -43,8 +43,8 @@ public sealed class SourceType : ValueObject
             _ => Direction.In,
         };
 
-    public static readonly IReadOnlyList<SourceType> BatchCreationSources =
-        [Purchase, CustomerReturn, LoanReturn];
+    public static bool IsValid(string? value) =>
+        !string.IsNullOrWhiteSpace(value) && _cache.ContainsKey(value);
 
     private SourceType(string value)
     {
@@ -63,14 +63,6 @@ public sealed class SourceType : ValueObject
             $"'{value}' is invalid SourceType. Valid values: {string.Join(", ", _cache.Keys)}"
         );
     }
-
-    public static bool IsValid(string? value) =>
-        !string.IsNullOrWhiteSpace(value) && _cache.ContainsKey(value);
-
-    public static bool IsValidForBatchCreation(string? value) =>
-        !string.IsNullOrWhiteSpace(value)
-        && _cache.TryGetValue(value, out var sourceType)
-        && BatchCreationSources.Contains(sourceType);
 
     public static IEnumerable<SourceType> List() => _cache.Values.Distinct();
 

@@ -6,6 +6,8 @@ public sealed class StockMovementResponse
 
     public Guid ItemId { get; init; }
 
+    public string ItemName { get; init; } = string.Empty;
+
     public Guid WarehouseId { get; init; }
 
     public Guid? BatchId { get; init; }

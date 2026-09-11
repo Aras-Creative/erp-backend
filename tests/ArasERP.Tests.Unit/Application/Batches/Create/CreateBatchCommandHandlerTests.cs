@@ -57,7 +57,7 @@ public class CreateBatchCommandHandlerTests
     private CreateBatchCommand CreateCommand(
         decimal receivedQty = 100,
         decimal unitCost = 10,
-        string sourceType = "PURCHASE",
+        SourceTypeEnum sourceType = SourceTypeEnum.PURCHASE,
         string? externalReferenceNo = null,
         string? note = null
     ) =>

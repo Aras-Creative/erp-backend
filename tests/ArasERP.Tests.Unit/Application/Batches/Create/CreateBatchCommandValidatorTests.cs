@@ -13,7 +13,7 @@ public class CreateBatchCommandValidatorTests
         decimal receivedQty = 100,
         decimal unitCost = 10,
         DateTime? receivedAt = null,
-        string? sourceType = "PURCHASE"
+        SourceTypeEnum sourceType = SourceTypeEnum.PURCHASE
     ) =>
         new()
         {
@@ -22,7 +22,7 @@ public class CreateBatchCommandValidatorTests
             ReceivedQty = receivedQty,
             UnitCost = unitCost,
             ReceivedAt = receivedAt ?? DateTime.UtcNow,
-            SourceType = sourceType!,
+            SourceType = sourceType,
             RecordedBy = Guid.NewGuid(),
         };
 
@@ -78,24 +78,10 @@ public class CreateBatchCommandValidatorTests
             .ContainSingle(e => e.PropertyName == nameof(CreateBatchCommand.ReceivedAt));
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData(null)]
-    public void Validate_WithMissingSourceType_ReturnsError(string? sourceType)
-    {
-        var result = _sut.Validate(CreateCommand(sourceType: sourceType));
-
-        result.IsValid.Should().BeFalse();
-        result
-            .Errors.Should()
-            .ContainSingle(e => e.PropertyName == nameof(CreateBatchCommand.SourceType));
-    }
-
     [Fact]
-    public void Validate_WithInvalidSourceType_ReturnsError()
+    public void Validate_WithUndefinedSourceType_ReturnsError()
     {
-        var result = _sut.Validate(CreateCommand(sourceType: "INVENTORY_COUNT"));
+        var result = _sut.Validate(CreateCommand(sourceType: (SourceTypeEnum)999));
 
         result.IsValid.Should().BeFalse();
         result
@@ -104,25 +90,10 @@ public class CreateBatchCommandValidatorTests
     }
 
     [Theory]
-    [InlineData("SALE")]
-    [InlineData("ADJUSTMENT")]
-    [InlineData("LOAN_OUT")]
-    [InlineData("TRANSFER_OUT")]
-    public void Validate_WithOutboundSourceType_ReturnsError(string sourceType)
-    {
-        var result = _sut.Validate(CreateCommand(sourceType: sourceType));
-
-        result.IsValid.Should().BeFalse();
-        result
-            .Errors.Should()
-            .ContainSingle(e => e.PropertyName == nameof(CreateBatchCommand.SourceType));
-    }
-
-    [Theory]
-    [InlineData("PURCHASE")]
-    [InlineData("CUSTOMER_RETURN")]
-    [InlineData("LOAN_RETURN")]
-    public void Validate_WithInboundSourceType_ReturnsNoErrors(string sourceType)
+    [InlineData(SourceTypeEnum.PURCHASE)]
+    [InlineData(SourceTypeEnum.CUSTOMER_RETURN)]
+    [InlineData(SourceTypeEnum.LOAN_RETURN)]
+    public void Validate_WithInboundSourceType_ReturnsNoErrors(SourceTypeEnum sourceType)
     {
         var result = _sut.Validate(CreateCommand(sourceType: sourceType));
 

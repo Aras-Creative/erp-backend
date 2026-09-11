@@ -24,37 +24,42 @@ public sealed class StockMovementRepository(InventoryDbContext dbContext) : ISto
         CancellationToken cancellationToken = default
     )
     {
-        IQueryable<StockMovement> query = dbContext.StockMovements.AsNoTracking();
+        var query =
+            from m in dbContext.StockMovements.AsNoTracking()
+            join item in dbContext.StockItems.AsNoTracking() on m.ItemId equals item.Id
+            select new { Movement = m, ItemName = item.Name };
 
         if (filter.ItemId.HasValue)
         {
             var itemId = new StockItemId(filter.ItemId.Value);
-            query = query.Where(m => m.ItemId == itemId);
+            query = query.Where(x => x.Movement.ItemId == itemId);
         }
 
         if (filter.BatchId.HasValue)
         {
             var batchId = new BatchId(filter.BatchId.Value);
-            query = query.Where(m => m.BatchId != null && m.BatchId == batchId);
+            query = query.Where(
+                x => x.Movement.BatchId != null && x.Movement.BatchId == batchId
+            );
         }
 
         var ordered = filter.OrderBy?.ToLowerInvariant() switch
         {
             "quantity" => filter.Descending
-                ? query.OrderByDescending(m => m.Quantity)
-                : query.OrderBy(m => m.Quantity),
+                ? query.OrderByDescending(x => x.Movement.Quantity)
+                : query.OrderBy(x => x.Movement.Quantity),
 
             "direction" => filter.Descending
-                ? query.OrderByDescending(m => m.Direction)
-                : query.OrderBy(m => m.Direction),
+                ? query.OrderByDescending(x => x.Movement.Direction)
+                : query.OrderBy(x => x.Movement.Direction),
 
             "sourcetype" => filter.Descending
-                ? query.OrderByDescending(m => m.SourceType)
-                : query.OrderBy(m => m.SourceType),
+                ? query.OrderByDescending(x => x.Movement.SourceType)
+                : query.OrderBy(x => x.Movement.SourceType),
 
             _ => filter.Descending
-                ? query.OrderByDescending(m => m.CreatedAt)
-                : query.OrderBy(m => m.CreatedAt),
+                ? query.OrderByDescending(x => x.Movement.CreatedAt)
+                : query.OrderBy(x => x.Movement.CreatedAt),
         };
 
         var totalCount = await ordered.CountAsync(cancellationToken);
@@ -65,21 +70,22 @@ public sealed class StockMovementRepository(InventoryDbContext dbContext) : ISto
             .ToListAsync(cancellationToken);
 
         var items = rows
-            .Select(m => new ListStockMovementsDto
+            .Select(x => new ListStockMovementsDto
             {
-                Id = m.Id.Value,
-                ItemId = m.ItemId.Value,
-                WarehouseId = m.WarehouseId.Value,
-                BatchId = m.BatchId?.Value,
-                Direction = m.Direction.Value,
-                Quantity = m.Quantity,
-                SourceType = m.SourceType.Value,
-                SourceReferenceId = m.SourceReferenceId,
-                ExternalReferenceNo = m.ExternalReferenceNo,
-                Note = m.Note,
-                CreatedAt = m.CreatedAt,
-                RecordedBy = m.RecordedBy,
-                ReceivedBy = m.ReceivedBy,
+                Id = x.Movement.Id.Value,
+                ItemId = x.Movement.ItemId.Value,
+                ItemName = x.ItemName,
+                WarehouseId = x.Movement.WarehouseId.Value,
+                BatchId = x.Movement.BatchId?.Value,
+                Direction = x.Movement.Direction.Value,
+                Quantity = x.Movement.Quantity,
+                SourceType = x.Movement.SourceType.Value,
+                SourceReferenceId = x.Movement.SourceReferenceId,
+                ExternalReferenceNo = x.Movement.ExternalReferenceNo,
+                Note = x.Movement.Note,
+                CreatedAt = x.Movement.CreatedAt,
+                RecordedBy = x.Movement.RecordedBy,
+                ReceivedBy = x.Movement.ReceivedBy,
             })
             .ToList();
 
