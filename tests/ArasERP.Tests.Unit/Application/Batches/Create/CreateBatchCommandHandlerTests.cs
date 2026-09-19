@@ -143,6 +143,9 @@ public class CreateBatchCommandHandlerTests
         captured.WarehouseId.Should().Be(new WarehouseId(_warehouseId));
         captured.Direction.Should().Be(Direction.In);
         captured.Quantity.Should().Be(100);
+        captured.UnitCost.Should().Be(10);
+        captured.Currency.Should().Be("IDR");
+        captured.Total.Should().Be(1000);
         captured.SourceType.Should().Be(SourceType.Purchase);
         captured.BatchId.Should().NotBeNull();
         captured.SourceReferenceId.Should().BeNull();

@@ -75,6 +75,7 @@ public sealed class CreateBatchCommandHandler(
                     direction,
                     command.ReceivedQty,
                     sourceType,
+                    unitCost: batch.UnitCost,
                     externalReferenceNo: command.ExternalReferenceNo,
                     batchId: batch.Id,
                     note: command.Note,
