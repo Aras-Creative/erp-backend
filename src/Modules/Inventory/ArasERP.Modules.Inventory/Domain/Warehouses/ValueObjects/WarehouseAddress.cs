@@ -5,6 +5,7 @@ namespace ArasERP.Modules.Inventory.Domain.Warehouses.ValueObjects;
 public sealed class WarehouseAddress : ValueObject
 {
     private WarehouseAddress(
+        Guid addressId,
         string subDistrictName,
         string districtName,
         string cityName,
@@ -12,6 +13,7 @@ public sealed class WarehouseAddress : ValueObject
         string zipCode
     )
     {
+        AddressId = addressId;
         SubDistrictName = subDistrictName;
         DistrictName = districtName;
         CityName = cityName;
@@ -20,6 +22,7 @@ public sealed class WarehouseAddress : ValueObject
     }
 
     public static WarehouseAddress Create(
+        Guid addressId,
         string subDistrictName,
         string districtName,
         string cityName,
@@ -27,14 +30,31 @@ public sealed class WarehouseAddress : ValueObject
         string zipCode
     )
     {
+        if (addressId == Guid.Empty)
+        {
+            throw new ArgumentException(
+                $"'{nameof(addressId)}' cannot be empty.",
+                nameof(addressId)
+            );
+        }
+
         ArgumentException.ThrowIfNullOrWhiteSpace(subDistrictName);
         ArgumentException.ThrowIfNullOrWhiteSpace(districtName);
         ArgumentException.ThrowIfNullOrWhiteSpace(cityName);
         ArgumentException.ThrowIfNullOrWhiteSpace(provinceName);
         ArgumentException.ThrowIfNullOrWhiteSpace(zipCode);
 
-        return new WarehouseAddress(subDistrictName, districtName, cityName, provinceName, zipCode);
+        return new WarehouseAddress(
+            addressId,
+            subDistrictName,
+            districtName,
+            cityName,
+            provinceName,
+            zipCode
+        );
     }
+
+    public Guid AddressId { get; }
 
     public string SubDistrictName { get; }
 
@@ -48,6 +68,7 @@ public sealed class WarehouseAddress : ValueObject
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {
+        yield return AddressId;
         yield return SubDistrictName;
         yield return DistrictName;
         yield return CityName;

@@ -126,8 +126,11 @@ public class CreateBatchCommandHandlerTests
             .When(x => x.AddAsync(Arg.Any<StockMovement>(), Arg.Any<CancellationToken>()))
             .Do(ci => captured = ci.Arg<StockMovement>());
 
-await _sut.Handle(
-            CreateCommand(note: "Received from supplier", externalReferenceNo: "INV-SUPPLIER-00293"),
+        await _sut.Handle(
+            CreateCommand(
+                note: "Received from supplier",
+                externalReferenceNo: "INV-SUPPLIER-00293"
+            ),
             CancellationToken.None
         );
 

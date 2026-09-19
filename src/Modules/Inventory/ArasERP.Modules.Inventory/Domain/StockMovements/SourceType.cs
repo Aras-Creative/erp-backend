@@ -73,7 +73,8 @@ public sealed class SourceType : ValueObject
 
     public override string ToString() => Value;
 
-    public static implicit operator string(SourceType sourceType) => sourceType?.Value ?? string.Empty;
+    public static implicit operator string(SourceType sourceType) =>
+        sourceType?.Value ?? string.Empty;
 
     public static explicit operator SourceType(string value) => FromValue(value);
 }

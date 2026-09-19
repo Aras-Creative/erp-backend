@@ -21,6 +21,10 @@ internal sealed class WarehouseConfiguration : IEntityTypeConfiguration<Warehous
 
         builder.HasIndex(w => w.Name).IsUnique();
 
+        builder.Property(w => w.IsActive).HasColumnName("is_active").IsRequired();
+
+        builder.HasIndex(w => w.IsActive);
+
         builder.Property(w => w.IsDeleted).HasColumnName("is_deleted").IsRequired();
 
         builder.Property(w => w.DeletedAtUtc).HasColumnName("deleted_at_utc");
@@ -48,6 +52,8 @@ internal sealed class WarehouseConfiguration : IEntityTypeConfiguration<Warehous
             w => w.Address,
             address =>
             {
+                address.Property(a => a.AddressId).HasColumnName("address_id").IsRequired();
+
                 address
                     .Property(a => a.SubDistrictName)
                     .HasColumnName("address_sub_district_name")

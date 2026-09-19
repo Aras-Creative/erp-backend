@@ -39,6 +39,7 @@ public sealed class CreateWarehouseCommandHandler(
         }
 
         var address = WarehouseAddress.Create(
+            addressRef.AddressId,
             addressRef.SubDistrictName,
             addressRef.DistrictName,
             addressRef.CityName,

@@ -35,7 +35,10 @@ internal sealed class StockMovementConfiguration : IEntityTypeConfiguration<Stoc
             .Property(m => m.BatchId)
             .HasColumnName("batch_id")
             .IsRequired(false)
-            .HasConversion(id => id == null ? (Guid?)null : id.Value, value => value.HasValue ? new BatchId(value.Value) : null);
+            .HasConversion(
+                id => id == null ? (Guid?)null : id.Value,
+                value => value.HasValue ? new BatchId(value.Value) : null
+            );
 
         builder
             .Property(m => m.Direction)
@@ -66,11 +69,7 @@ internal sealed class StockMovementConfiguration : IEntityTypeConfiguration<Stoc
             .HasMaxLength(100)
             .IsRequired(false);
 
-        builder
-            .Property(m => m.Note)
-            .HasColumnName("note")
-            .HasMaxLength(500)
-            .IsRequired(false);
+        builder.Property(m => m.Note).HasColumnName("note").HasMaxLength(500).IsRequired(false);
 
         builder
             .Property(m => m.CreatedAt)
@@ -78,10 +77,7 @@ internal sealed class StockMovementConfiguration : IEntityTypeConfiguration<Stoc
             .IsRequired()
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-        builder
-            .Property(m => m.RecordedBy)
-            .HasColumnName("recorded_by")
-            .IsRequired();
+        builder.Property(m => m.RecordedBy).HasColumnName("recorded_by").IsRequired();
 
         builder
             .Property(m => m.ReceivedBy)

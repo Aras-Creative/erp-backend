@@ -9,7 +9,8 @@ namespace ArasERP.Tests.Unit.Application.StockMovements.List;
 
 public class ListStockMovementsQueryHandlerTests
 {
-    private readonly IStockMovementRepository _repository = Substitute.For<IStockMovementRepository>();
+    private readonly IStockMovementRepository _repository =
+        Substitute.For<IStockMovementRepository>();
     private readonly ListStockMovementsQueryValidator _validator = new();
     private readonly ListStockMovementsQueryHandler _sut;
 
@@ -25,6 +26,7 @@ public class ListStockMovementsQueryHandlerTests
             ItemId = Guid.NewGuid(),
             ItemName = "Rice 5kg",
             WarehouseId = Guid.NewGuid(),
+            WarehouseName = "Gudang Utama",
             BatchId = Guid.NewGuid(),
             Direction = "IN",
             Quantity = 100,
@@ -57,10 +59,12 @@ public class ListStockMovementsQueryHandlerTests
     {
         var itemId = Guid.NewGuid();
         var batchId = Guid.NewGuid();
+        var warehouseId = Guid.NewGuid();
         var query = new ListStockMovementsQuery
         {
             ItemId = itemId,
             BatchId = batchId,
+            WarehouseId = warehouseId,
             Page = 2,
             PageSize = 25,
             OrderBy = "Quantity",
@@ -79,6 +83,7 @@ public class ListStockMovementsQueryHandlerTests
                 Arg.Is<StockMovementListFilter>(f =>
                     f.ItemId == itemId
                     && f.BatchId == batchId
+                    && f.WarehouseId == warehouseId
                     && f.Page == query.Page
                     && f.PageSize == query.PageSize
                     && f.OrderBy == query.OrderBy

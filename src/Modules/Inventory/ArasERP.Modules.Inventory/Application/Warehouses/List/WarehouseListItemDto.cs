@@ -8,6 +8,8 @@ public sealed record WarehouseListItemDto
 
     public required string Name { get; init; }
 
+    public required bool IsActive { get; init; }
+
     public required PersonInChargeData PersonInCharge { get; init; }
 
     public required AddressData Address { get; init; }
@@ -19,11 +21,13 @@ public sealed record WarehouseListItemDto
         {
             WarehouseId = detail.WarehouseId,
             Name = detail.Name,
+            IsActive = detail.IsActive,
             PersonInCharge = new PersonInChargeData(
                 detail.PersonInCharge.Name,
                 detail.PersonInCharge.Phone
             ),
             Address = new AddressData(
+                detail.Address.AddressId,
                 detail.Address.SubDistrictName,
                 detail.Address.DistrictName,
                 detail.Address.CityName,
@@ -36,6 +40,7 @@ public sealed record WarehouseListItemDto
     public sealed record PersonInChargeData(string Name, string? Phone);
 
     public sealed record AddressData(
+        Guid AddressId,
         string SubDistrictName,
         string DistrictName,
         string CityName,

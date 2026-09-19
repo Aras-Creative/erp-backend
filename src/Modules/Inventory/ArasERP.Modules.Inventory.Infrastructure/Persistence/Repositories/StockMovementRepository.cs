@@ -4,6 +4,7 @@ using ArasERP.Modules.Inventory.Application.StockMovements.List;
 using ArasERP.Modules.Inventory.Domain.Batches;
 using ArasERP.Modules.Inventory.Domain.StockItems;
 using ArasERP.Modules.Inventory.Domain.StockMovements;
+using ArasERP.Modules.Inventory.Domain.Warehouses;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Repositories;
@@ -27,7 +28,14 @@ public sealed class StockMovementRepository(InventoryDbContext dbContext) : ISto
         var query =
             from m in dbContext.StockMovements.AsNoTracking()
             join item in dbContext.StockItems.AsNoTracking() on m.ItemId equals item.Id
-            select new { Movement = m, ItemName = item.Name };
+            join warehouse in dbContext.Warehouses.AsNoTracking().IgnoreQueryFilters()
+                on m.WarehouseId equals warehouse.Id
+            select new
+            {
+                Movement = m,
+                ItemName = item.Name,
+                WarehouseName = warehouse.Name,
+            };
 
         if (filter.ItemId.HasValue)
         {
@@ -38,9 +46,13 @@ public sealed class StockMovementRepository(InventoryDbContext dbContext) : ISto
         if (filter.BatchId.HasValue)
         {
             var batchId = new BatchId(filter.BatchId.Value);
-            query = query.Where(
-                x => x.Movement.BatchId != null && x.Movement.BatchId == batchId
-            );
+            query = query.Where(x => x.Movement.BatchId != null && x.Movement.BatchId == batchId);
+        }
+
+        if (filter.WarehouseId.HasValue)
+        {
+            var warehouseId = new WarehouseId(filter.WarehouseId.Value);
+            query = query.Where(x => x.Movement.WarehouseId == warehouseId);
         }
 
         var ordered = filter.OrderBy?.ToLowerInvariant() switch
@@ -69,13 +81,13 @@ public sealed class StockMovementRepository(InventoryDbContext dbContext) : ISto
             .Take(filter.PageSize)
             .ToListAsync(cancellationToken);
 
-        var items = rows
-            .Select(x => new ListStockMovementsDto
+        var items = rows.Select(x => new ListStockMovementsDto
             {
                 Id = x.Movement.Id.Value,
                 ItemId = x.Movement.ItemId.Value,
                 ItemName = x.ItemName,
                 WarehouseId = x.Movement.WarehouseId.Value,
+                WarehouseName = x.WarehouseName,
                 BatchId = x.Movement.BatchId?.Value,
                 Direction = x.Movement.Direction.Value,
                 Quantity = x.Movement.Quantity,
@@ -89,6 +101,11 @@ public sealed class StockMovementRepository(InventoryDbContext dbContext) : ISto
             })
             .ToList();
 
-        return new PagedList<ListStockMovementsDto>(items, filter.Page, filter.PageSize, totalCount);
+        return new PagedList<ListStockMovementsDto>(
+            items,
+            filter.Page,
+            filter.PageSize,
+            totalCount
+        );
     }
 }

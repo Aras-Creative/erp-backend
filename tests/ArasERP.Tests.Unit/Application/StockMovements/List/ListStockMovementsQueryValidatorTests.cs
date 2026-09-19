@@ -34,9 +34,7 @@ public class ListStockMovementsQueryValidatorTests
     [Fact]
     public void Validate_WithItemAndBatchFilters_ReturnsNoErrors()
     {
-        var result = _sut.Validate(
-            CreateQuery(itemId: Guid.NewGuid(), batchId: Guid.NewGuid())
-        );
+        var result = _sut.Validate(CreateQuery(itemId: Guid.NewGuid(), batchId: Guid.NewGuid()));
 
         result.IsValid.Should().BeTrue();
     }
@@ -49,7 +47,9 @@ public class ListStockMovementsQueryValidatorTests
         var result = _sut.Validate(CreateQuery(page: page));
 
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle(e => e.PropertyName == nameof(ListStockMovementsQuery.Page));
+        result
+            .Errors.Should()
+            .ContainSingle(e => e.PropertyName == nameof(ListStockMovementsQuery.Page));
     }
 
     [Theory]

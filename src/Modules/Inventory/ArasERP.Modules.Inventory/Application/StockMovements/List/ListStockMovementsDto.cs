@@ -10,6 +10,8 @@ public sealed class ListStockMovementsDto
 
     public Guid WarehouseId { get; init; }
 
+    public string? WarehouseName { get; init; }
+
     public Guid? BatchId { get; init; }
 
     public string Direction { get; init; } = string.Empty;

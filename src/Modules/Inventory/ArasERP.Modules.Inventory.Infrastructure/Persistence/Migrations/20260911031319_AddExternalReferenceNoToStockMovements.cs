@@ -15,15 +15,14 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                 table: "stock_movements",
                 type: "character varying(100)",
                 maxLength: 100,
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "external_reference_no",
-                table: "stock_movements");
+            migrationBuilder.DropColumn(name: "external_reference_no", table: "stock_movements");
         }
     }
 }

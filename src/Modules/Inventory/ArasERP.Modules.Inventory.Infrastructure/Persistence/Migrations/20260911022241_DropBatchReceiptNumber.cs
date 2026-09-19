@@ -10,13 +10,9 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "ix_batches_receipt_number_unique",
-                table: "batches");
+            migrationBuilder.DropIndex(name: "ix_batches_receipt_number_unique", table: "batches");
 
-            migrationBuilder.DropColumn(
-                name: "receipt_number",
-                table: "batches");
+            migrationBuilder.DropColumn(name: "receipt_number", table: "batches");
         }
 
         /// <inheritdoc />
@@ -28,13 +24,15 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                 type: "character varying(50)",
                 maxLength: 50,
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             migrationBuilder.CreateIndex(
                 name: "ix_batches_receipt_number_unique",
                 table: "batches",
                 column: "receipt_number",
-                unique: true);
+                unique: true
+            );
         }
     }
 }

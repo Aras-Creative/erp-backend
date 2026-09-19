@@ -14,8 +14,7 @@ public class BatchTests
         DateTime? receivedAt = null,
         decimal receivedQty = 100,
         decimal unitCost = 10
-    ) =>
-        Batch.Create(ItemId, WarehouseId, receivedAt ?? DateTime.UtcNow, receivedQty, unitCost);
+    ) => Batch.Create(ItemId, WarehouseId, receivedAt ?? DateTime.UtcNow, receivedQty, unitCost);
 
     [Fact]
     public void Create_WithValidData_SetsProperties()

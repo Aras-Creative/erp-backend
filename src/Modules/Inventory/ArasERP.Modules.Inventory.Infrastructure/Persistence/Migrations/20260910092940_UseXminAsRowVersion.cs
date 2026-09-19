@@ -21,7 +21,8 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                 table: "stock_levels",
                 type: "xid",
                 nullable: false,
-                defaultValue: 0u);
+                defaultValue: 0u
+            );
         }
     }
 }

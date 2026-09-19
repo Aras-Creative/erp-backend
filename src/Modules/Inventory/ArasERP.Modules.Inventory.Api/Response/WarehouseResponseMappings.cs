@@ -16,11 +16,13 @@ public static class WarehouseResponseMappings
         {
             WarehouseId = item.WarehouseId,
             Name = item.Name,
+            IsActive = item.IsActive,
             PersonInCharge = new WarehouseResponse.PersonInChargeData(
                 item.PersonInCharge.Name,
                 item.PersonInCharge.Phone
             ),
             Address = new WarehouseResponse.AddressData(
+                item.Address.AddressId,
                 item.Address.SubDistrictName,
                 item.Address.DistrictName,
                 item.Address.CityName,
@@ -35,11 +37,13 @@ public static class WarehouseResponseMappings
         {
             WarehouseId = detail.WarehouseId,
             Name = detail.Name,
+            IsActive = detail.IsActive,
             PersonInCharge = new WarehouseResponse.PersonInChargeData(
                 detail.PersonInCharge.Name,
                 detail.PersonInCharge.Phone
             ),
             Address = new WarehouseResponse.AddressData(
+                detail.Address.AddressId,
                 detail.Address.SubDistrictName,
                 detail.Address.DistrictName,
                 detail.Address.CityName,

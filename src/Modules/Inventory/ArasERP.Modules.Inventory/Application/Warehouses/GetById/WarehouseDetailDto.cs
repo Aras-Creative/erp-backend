@@ -6,6 +6,8 @@ public sealed record WarehouseDetailDto
 
     public required string Name { get; init; }
 
+    public required bool IsActive { get; init; }
+
     public required PersonInChargeData PersonInCharge { get; init; }
 
     public required AddressData Address { get; init; }
@@ -21,6 +23,8 @@ public sealed record WarehouseDetailDto
 
     public sealed record AddressData
     {
+        public required Guid AddressId { get; init; }
+
         public required string SubDistrictName { get; init; }
 
         public required string DistrictName { get; init; }

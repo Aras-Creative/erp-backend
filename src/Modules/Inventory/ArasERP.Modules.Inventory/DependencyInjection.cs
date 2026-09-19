@@ -8,6 +8,7 @@ using ArasERP.Modules.Inventory.Application.Warehouses.Delete;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetOptions;
 using ArasERP.Modules.Inventory.Application.Warehouses.List;
+using ArasERP.Modules.Inventory.Application.Warehouses.ToggleStatus;
 using ArasERP.Modules.Inventory.Application.Warehouses.Update;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,15 @@ public static class DependencyInjection
         services.AddScoped<
             ICommandHandler<DeleteWarehouseCommand>,
             DeleteWarehouseCommandHandler
+        >();
+
+        services.AddScoped<
+            IValidator<ToggleWarehouseStatusCommand>,
+            ToggleWarehouseStatusCommandValidator
+        >();
+        services.AddScoped<
+            ICommandHandler<ToggleWarehouseStatusCommand>,
+            ToggleWarehouseStatusCommandHandler
         >();
 
         services.AddScoped<

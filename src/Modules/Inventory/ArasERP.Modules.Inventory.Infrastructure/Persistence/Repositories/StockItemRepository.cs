@@ -2,7 +2,6 @@ using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Application.StockItems.List;
 using ArasERP.Modules.Inventory.Domain.StockItems;
-using ArasERP.Modules.Inventory.Domain.StockLevels;
 using ArasERP.Modules.Inventory.Domain.Warehouses;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +9,15 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Repositories;
 
 public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockItemRepository
 {
+    private sealed record AggregatedStockLevel
+    {
+        public StockItemId ItemId { get; init; } = null!;
+
+        public decimal OnHandQty { get; init; }
+
+        public decimal ReservedQty { get; init; }
+    }
+
     public async Task AddAsync(StockItem stockItem, CancellationToken cancellationToken = default)
     {
         await dbContext.StockItems.AddAsync(stockItem, cancellationToken);
@@ -70,27 +78,39 @@ public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockIt
             itemQuery = itemQuery.Where(x => x.IsActive == filter.IsActive.Value);
         }
 
-        IQueryable<StockLevel> levelQuery = dbContext.StockLevels.AsNoTracking();
+        IQueryable<AggregatedStockLevel> levelQuery;
+
         if (filter.WarehouseId.HasValue)
         {
             var warehouseId = new WarehouseId(filter.WarehouseId.Value);
-            levelQuery = levelQuery.Where(l => l.WarehouseId == warehouseId);
+            levelQuery = dbContext
+                .StockLevels.AsNoTracking()
+                .Where(l => l.WarehouseId == warehouseId)
+                .Select(l => new AggregatedStockLevel
+                {
+                    ItemId = l.ItemId,
+                    OnHandQty = l.OnHandQty,
+                    ReservedQty = l.ReservedQty,
+                });
+        }
+        else
+        {
+            levelQuery = dbContext
+                .StockLevels.AsNoTracking()
+                .GroupBy(l => l.ItemId)
+                .Select(g => new AggregatedStockLevel
+                {
+                    ItemId = g.Key,
+                    OnHandQty = g.Sum(l => l.OnHandQty),
+                    ReservedQty = g.Sum(l => l.ReservedQty),
+                });
         }
 
         var joined =
             from item in itemQuery
             join level in levelQuery on item.Id equals level.ItemId into levelGroup
             from level in levelGroup.DefaultIfEmpty()
-            join warehouse in dbContext.Warehouses.AsNoTracking()
-                on level.WarehouseId equals warehouse.Id
-                into warehouseGroup
-            from warehouse in warehouseGroup.DefaultIfEmpty()
-            select new
-            {
-                Item = item,
-                Level = level,
-                Warehouse = warehouse,
-            };
+            select new { Item = item, Level = level };
 
         var projected =
             from row in joined
@@ -104,8 +124,6 @@ public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockIt
                 CostingMethod = row.Item.CostingMethod.Value,
                 row.Item.CreatedAt,
                 row.Item.UpdatedAt,
-                WarehouseId = row.Level != null ? row.Level.WarehouseId.Value : (Guid?)null,
-                WarehouseName = row.Warehouse != null ? row.Warehouse.Name : null,
                 OnHandQty = row.Level != null ? row.Level.OnHandQty : 0m,
                 ReservedQty = row.Level != null ? row.Level.ReservedQty : 0m,
             };
@@ -160,8 +178,8 @@ public sealed class StockItemRepository(InventoryDbContext dbContext) : IStockIt
                 Name = x.Name,
                 Unit = x.Unit,
                 IsActive = x.IsActive,
-                WarehouseId = x.WarehouseId ?? filter.WarehouseId,
-                WarehouseName = x.WarehouseName ?? filteredWarehouseName,
+                WarehouseId = filter.WarehouseId,
+                WarehouseName = filteredWarehouseName,
                 OnHandQty = x.OnHandQty,
                 ReservedQty = x.ReservedQty,
                 AvailableQty = x.OnHandQty - x.ReservedQty,

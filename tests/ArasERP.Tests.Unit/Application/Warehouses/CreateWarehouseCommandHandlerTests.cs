@@ -73,6 +73,7 @@ public class CreateWarehouseCommandHandlerTests
                     && w.Address.ProvinceName == "DKI Jakarta"
                     && w.Address.ZipCode == "10110"
                     && w.FullAddressText == command.FullAddressText
+                    && w.Address.AddressId == SampleAddressId
                 ),
                 Arg.Any<CancellationToken>()
             );

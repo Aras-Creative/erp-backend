@@ -55,6 +55,7 @@ public sealed class UpdateWarehouseCommandHandler(
         }
 
         var address = WarehouseAddress.Create(
+            addressRef.AddressId,
             addressRef.SubDistrictName,
             addressRef.DistrictName,
             addressRef.CityName,

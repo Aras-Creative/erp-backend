@@ -16,23 +16,20 @@ public static class StockMovementEndpoints
         this IEndpointRouteBuilder endpoints
     )
     {
-        var stockMovements = endpoints
-            .MapGroup("api/stock-movements")
-            .WithTags("StockMovements");
+        var stockMovements = endpoints.MapGroup("api/stock-movements").WithTags("StockMovements");
 
         stockMovements.MapGet("/", ListStockMovements).WithName(nameof(ListStockMovements));
 
         return endpoints;
     }
 
-    private static async Task<
-        Ok<ApiResponse<PagedList<StockMovementResponse>>>
-    > ListStockMovements(
+    private static async Task<Ok<ApiResponse<PagedList<StockMovementResponse>>>> ListStockMovements(
         HttpContext context,
         IQueryHandler<ListStockMovementsQuery, PagedList<ListStockMovementsDto>> handler,
         CancellationToken cancellationToken,
         [FromQuery] Guid? itemId = null,
         [FromQuery] Guid? batchId = null,
+        [FromQuery] Guid? warehouseId = null,
         [FromQuery] int page = PaginationDefaults.Page,
         [FromQuery] int pageSize = PaginationDefaults.PageSize,
         [FromQuery] string? orderBy = null,
@@ -46,6 +43,7 @@ public static class StockMovementEndpoints
         {
             ItemId = itemId,
             BatchId = batchId,
+            WarehouseId = warehouseId,
             Page = page,
             PageSize = pageSize,
             OrderBy = orderBy,

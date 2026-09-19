@@ -62,8 +62,10 @@ public class ListWarehousesQueryHandlerTests
         {
             WarehouseId = Guid.NewGuid(),
             Name = name,
+            IsActive = true,
             PersonInCharge = new WarehouseListItemDto.PersonInChargeData("Budi", "08123456789"),
             Address = new WarehouseListItemDto.AddressData(
+                Guid.NewGuid(),
                 "Kebon Sirih",
                 "Menteng",
                 "Jakarta",

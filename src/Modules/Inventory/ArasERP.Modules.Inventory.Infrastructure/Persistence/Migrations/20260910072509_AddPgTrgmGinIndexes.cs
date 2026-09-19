@@ -10,8 +10,7 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:PostgresExtension:pg_trgm", ",,");
+            migrationBuilder.AlterDatabase().Annotation("Npgsql:PostgresExtension:pg_trgm", ",,");
 
             migrationBuilder.Sql(
                 "CREATE INDEX ix_stock_items_name_trgm ON stock_items USING gin (name gin_trgm_ops);"
@@ -27,7 +26,8 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
             migrationBuilder.Sql("DROP INDEX ix_stock_items_name_trgm;");
             migrationBuilder.Sql("DROP INDEX ix_stock_items_sku_trgm;");
 
-            migrationBuilder.AlterDatabase()
+            migrationBuilder
+                .AlterDatabase()
                 .OldAnnotation("Npgsql:PostgresExtension:pg_trgm", ",,");
         }
     }

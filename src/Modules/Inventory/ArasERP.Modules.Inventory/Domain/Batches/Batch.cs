@@ -56,14 +56,7 @@ public sealed class Batch : AggregateRoot<BatchId>
                 "Entry date cannot be in the future."
             );
 
-        return new Batch(
-            BatchId.New(),
-            itemId,
-            warehouseId,
-            receivedAt,
-            receivedQty,
-            unitCost
-        );
+        return new Batch(BatchId.New(), itemId, warehouseId, receivedAt, receivedQty, unitCost);
     }
 
     public void Consume(decimal qty, DateTime? updatedAt = null)

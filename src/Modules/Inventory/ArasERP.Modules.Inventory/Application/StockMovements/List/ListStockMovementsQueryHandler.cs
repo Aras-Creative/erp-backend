@@ -19,6 +19,7 @@ public sealed class ListStockMovementsQueryHandler(
         var filter = new StockMovementListFilter(
             query.ItemId,
             query.BatchId,
+            query.WarehouseId,
             query.Page,
             query.PageSize,
             query.OrderBy,

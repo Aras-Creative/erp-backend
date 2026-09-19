@@ -19,7 +19,10 @@ public sealed class ListStockMovementsQueryValidator : AbstractValidator<ListSto
         RuleFor(x => x.PageSize).InclusiveBetween(1, 100);
 
         RuleFor(x => x.OrderBy)
-            .Must(x => string.IsNullOrWhiteSpace(x) || AllowedOrderBy.Contains(x, StringComparer.OrdinalIgnoreCase))
+            .Must(x =>
+                string.IsNullOrWhiteSpace(x)
+                || AllowedOrderBy.Contains(x, StringComparer.OrdinalIgnoreCase)
+            )
             .WithMessage("Invalid order by field.");
 
         RuleFor(x => x.ItemId)
@@ -29,5 +32,9 @@ public sealed class ListStockMovementsQueryValidator : AbstractValidator<ListSto
         RuleFor(x => x.BatchId)
             .Must(x => x is null || x != Guid.Empty)
             .WithMessage("Batch id must not be empty.");
+
+        RuleFor(x => x.WarehouseId)
+            .Must(x => x is null || x != Guid.Empty)
+            .WithMessage("Warehouse id must not be empty.");
     }
 }

@@ -19,6 +19,7 @@ public sealed class Warehouse : AggregateRoot<WarehouseId>
         PersonInCharge = personInCharge;
         Address = address;
         FullAddressText = fullAddressText;
+        IsActive = true;
     }
 
     private Warehouse() { }
@@ -64,6 +65,12 @@ public sealed class Warehouse : AggregateRoot<WarehouseId>
         AddDomainEvent(new WarehouseUpdatedDomainEvent(Id));
     }
 
+    public void ToggleStatus()
+    {
+        IsActive = !IsActive;
+        AddDomainEvent(new WarehouseStatusChangedDomainEvent(Id, IsActive));
+    }
+
     public void Delete()
     {
         // TODO: reject delete when the warehouse still has stock (pending Stock aggregate).
@@ -76,6 +83,8 @@ public sealed class Warehouse : AggregateRoot<WarehouseId>
         DeletedAtUtc = DateTime.UtcNow;
         AddDomainEvent(new WarehouseDeletedDomainEvent(Id));
     }
+
+    public bool IsActive { get; private set; }
 
     public bool IsDeleted { get; private set; }
 

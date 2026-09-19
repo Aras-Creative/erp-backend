@@ -53,6 +53,7 @@ public class UpdateWarehouseCommandHandlerTests
 
         warehouse.Name.Should().Be(command.Name);
         warehouse.Address.SubDistrictName.Should().Be("GAMBIR");
+        warehouse.Address.AddressId.Should().Be(addressId);
         warehouse.PersonInCharge.Name.Should().Be(command.PersonInCharge.Name);
         warehouse.FullAddressText.Should().Be(command.FullAddressText);
         await _repository.Received(1).UpdateAsync(warehouse, Arg.Any<CancellationToken>());
@@ -108,7 +109,14 @@ public class UpdateWarehouseCommandHandlerTests
         return Warehouse.Create(
             "Gudang Lama",
             WarehousePersonInCharge.Create("Budi"),
-            WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110"),
+            WarehouseAddress.Create(
+                Guid.NewGuid(),
+                "Kebon Sirih",
+                "Menteng",
+                "Jakarta",
+                "DKI Jakarta",
+                "10110"
+            ),
             "Gudang Lama"
         );
     }

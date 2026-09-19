@@ -7,6 +7,7 @@ namespace ArasERP.Modules.Inventory.Application.Abstractions;
 public sealed record StockMovementListFilter(
     Guid? ItemId,
     Guid? BatchId,
+    Guid? WarehouseId,
     int Page,
     int PageSize,
     string? OrderBy,

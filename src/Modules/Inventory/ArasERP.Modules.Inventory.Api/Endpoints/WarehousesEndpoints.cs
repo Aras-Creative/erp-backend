@@ -6,6 +6,7 @@ using ArasERP.Modules.Inventory.Application.Warehouses.Delete;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetOptions;
 using ArasERP.Modules.Inventory.Application.Warehouses.List;
+using ArasERP.Modules.Inventory.Application.Warehouses.ToggleStatus;
 using ArasERP.Modules.Inventory.Application.Warehouses.Update;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +29,10 @@ public static class WarehousesEndpoints
         group.MapGet("/{id:guid}", GetWarehouseById).WithName(nameof(GetWarehouseById));
 
         group.MapPost("/", CreateWarehouse).WithName(nameof(CreateWarehouse));
+
+        group
+            .MapPatch("/{id:guid}/status", ToggleWarehouseStatus)
+            .WithName(nameof(ToggleWarehouseStatus));
 
         group.MapPut("/{id:guid}", UpdateWarehouse).WithName(nameof(UpdateWarehouse));
 
@@ -88,6 +93,17 @@ public static class WarehousesEndpoints
                 )
             )
             : TypedResults.Ok(ApiResponse.Success(context, warehouse.ToResponse()));
+    }
+
+    private static async Task<NoContent> ToggleWarehouseStatus(
+        Guid id,
+        IMediator mediator,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new ToggleWarehouseStatusCommand { WarehouseId = id.ToString() };
+        await mediator.SendAsync<ToggleWarehouseStatusCommand>(command, cancellationToken);
+        return TypedResults.NoContent();
     }
 
     private static async Task<Created> CreateWarehouse(
