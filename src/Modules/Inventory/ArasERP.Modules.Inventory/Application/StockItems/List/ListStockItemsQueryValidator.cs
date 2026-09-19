@@ -8,23 +8,30 @@ public sealed class ListStockItemsQueryValidator : AbstractValidator<ListStockIt
     {
         "Sku",
         "Name",
+        "IsActive",
+        "CostingMethod",
+        "OnHandQty",
         "CreatedAt",
-        "UpdatedAt"
+        "UpdatedAt",
     };
 
     public ListStockItemsQueryValidator()
     {
-        RuleFor(x => x.Page)
-            .GreaterThan(0);
+        RuleFor(x => x.Page).GreaterThan(0);
 
-        RuleFor(x => x.PageSize)
-            .InclusiveBetween(1, 100);
+        RuleFor(x => x.PageSize).InclusiveBetween(1, 100);
 
-        RuleFor(x => x.Search)
-            .MaximumLength(100);
+        RuleFor(x => x.Search).MaximumLength(100);
 
         RuleFor(x => x.OrderBy)
-            .Must(x => string.IsNullOrWhiteSpace(x) || AllowedOrderBy.Contains(x))
+            .Must(x =>
+                string.IsNullOrWhiteSpace(x)
+                || AllowedOrderBy.Contains(x, StringComparer.OrdinalIgnoreCase)
+            )
             .WithMessage("Invalid order by field.");
+
+        RuleFor(x => x.WarehouseId)
+            .Must(x => x is null || x != Guid.Empty)
+            .WithMessage("Warehouse id must not be empty.");
     }
 }

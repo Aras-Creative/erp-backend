@@ -12,7 +12,8 @@ public class CreateWarehouseCommandValidatorTests
 
     private static CreateWarehouseCommand CreateCommand(
         string? name = "Gudang Utama",
-        Guid? addressId = null) =>
+        Guid? addressId = null
+    ) =>
         new()
         {
             Name = name!,

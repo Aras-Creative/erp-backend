@@ -23,6 +23,7 @@ public class GetWarehouseByIdQueryHandlerTests
         {
             WarehouseId = id,
             Name = "Gudang Utama",
+            IsActive = true,
             PersonInCharge = new WarehouseDetailDto.PersonInChargeData
             {
                 Name = "Budi",
@@ -30,6 +31,7 @@ public class GetWarehouseByIdQueryHandlerTests
             },
             Address = new WarehouseDetailDto.AddressData
             {
+                AddressId = id,
                 SubDistrictName = "Kebon Sirih",
                 DistrictName = "Menteng",
                 CityName = "Jakarta",

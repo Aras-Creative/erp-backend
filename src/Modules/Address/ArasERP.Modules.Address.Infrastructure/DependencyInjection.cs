@@ -19,7 +19,8 @@ public static class DependencyInjection
     public static IServiceCollection AddAddressInfrastructure(
         this IServiceCollection services,
         string connectionString,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
         services.AddDbContext<AddressDbContext>(options => options.UseNpgsql(connectionString));
 
@@ -27,7 +28,8 @@ public static class DependencyInjection
 
         // MengantarClient (SDK)
         services.Configure<IntegrationsOptions>(
-            configuration.GetSection(IntegrationsOptions.SectionName));
+            configuration.GetSection(IntegrationsOptions.SectionName)
+        );
         services.AddHttpClient<MengantarClient>(client =>
         {
             client.Timeout = TimeSpan.FromSeconds(30);
@@ -40,7 +42,8 @@ public static class DependencyInjection
         services.AddScoped<AddressSyncerService>();
         services.AddHostedService<ProvinceSeedBackgroundService>();
 
-        services.AddOptions<AddressSyncOptions>()
+        services
+            .AddOptions<AddressSyncOptions>()
             .BindConfiguration("AddressSync")
             .ValidateDataAnnotations()
             .ValidateOnStart();

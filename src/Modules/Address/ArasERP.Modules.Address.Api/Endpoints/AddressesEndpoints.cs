@@ -20,15 +20,21 @@ public static class AddressesEndpoints
         return app;
     }
 
-    private static async Task<Ok<ApiResponse<IReadOnlyList<AddressSearchResultItemDto>>>> SearchAddresses(
+    private static async Task<
+        Ok<ApiResponse<IReadOnlyList<AddressSearchResultItemDto>>>
+    > SearchAddresses(
         HttpContext context,
         IMediator mediator,
         CancellationToken cancellationToken,
         string keyword,
-        int limit = PaginationDefaults.MaxPageSize)
+        int limit = PaginationDefaults.MaxPageSize
+    )
     {
         var query = new SearchAddressesQuery { Keyword = keyword, Limit = limit };
-        var results = await mediator.SendAsync<SearchAddressesQuery, IReadOnlyList<Domain.Address>>(query, cancellationToken);
+        var results = await mediator.SendAsync<SearchAddressesQuery, IReadOnlyList<Domain.Address>>(
+            query,
+            cancellationToken
+        );
 
         IReadOnlyList<AddressSearchResultItemDto> dto =
         [
@@ -43,7 +49,7 @@ public static class AddressesEndpoints
                 DistrictName = a.DistrictName,
                 SubDistrictName = a.SubDistrictName,
                 ZipCode = a.ZipCode,
-            })
+            }),
         ];
 
         return TypedResults.Ok(ApiResponse.Success(context, dto));

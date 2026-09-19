@@ -20,6 +20,7 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "10.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("ArasERP.Modules.Inventory.Domain.Batches.Batch", b =>
@@ -38,12 +39,6 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("item_id");
 
-                    b.Property<string>("ReceiptNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("receipt_number");
-
                     b.Property<DateTime>("ReceivedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("received_at");
@@ -52,11 +47,6 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                         .HasPrecision(18, 4)
                         .HasColumnType("numeric(18,4)")
                         .HasColumnName("received_qty");
-
-                    b.Property<string>("RecordedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("recorded_by");
 
                     b.Property<decimal>("RemainingQty")
                         .HasPrecision(18, 4)
@@ -84,10 +74,6 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                         .HasColumnName("warehouse_id");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ReceiptNumber")
-                        .IsUnique()
-                        .HasDatabaseName("ix_batches_receipt_number_unique");
 
                     b.HasIndex("ReceivedAt")
                         .HasDatabaseName("ix_batches_received_at");
@@ -182,6 +168,135 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                     b.ToTable("stock_items", (string)null);
                 });
 
+            modelBuilder.Entity("ArasERP.Modules.Inventory.Domain.StockLevels.StockLevel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("item_id");
+
+                    b.Property<decimal>("OnHandQty")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("on_hand_qty");
+
+                    b.Property<decimal>("ReservedQty")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("reserved_qty");
+
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("warehouse_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WarehouseId")
+                        .HasDatabaseName("ix_stock_levels_warehouse_id");
+
+                    b.HasIndex("ItemId", "WarehouseId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_stock_levels_item_warehouse_unique");
+
+                    b.ToTable("stock_levels", (string)null);
+                });
+
+            modelBuilder.Entity("ArasERP.Modules.Inventory.Domain.StockMovements.StockMovement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("BatchId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("batch_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Direction")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("direction");
+
+                    b.Property<string>("ExternalReferenceNo")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("external_reference_no");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("item_id");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("note");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("quantity");
+
+                    b.Property<string>("ReceivedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("received_by");
+
+                    b.Property<Guid>("RecordedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("recorded_by");
+
+                    b.Property<Guid?>("SourceReferenceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("source_reference_id");
+
+                    b.Property<string>("SourceType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("source_type");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("warehouse_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceReferenceId")
+                        .HasDatabaseName("ix_stock_movements_source_reference");
+
+                    b.HasIndex("ItemId", "CreatedAt")
+                        .HasDatabaseName("ix_stock_movements_item_created");
+
+                    b.HasIndex("WarehouseId", "CreatedAt")
+                        .HasDatabaseName("ix_stock_movements_warehouse_created");
+
+                    b.ToTable("stock_movements", (string)null);
+                });
+
             modelBuilder.Entity("ArasERP.Modules.Inventory.Domain.Warehouses.Warehouse", b =>
                 {
                     b.Property<Guid>("Id")
@@ -197,6 +312,10 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("full_address_text");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
@@ -208,6 +327,8 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -221,6 +342,10 @@ namespace ArasERP.Modules.Inventory.Infrastructure.Persistence.Migrations
                         {
                             b1.Property<Guid>("WarehouseId")
                                 .HasColumnType("uuid");
+
+                            b1.Property<Guid>("AddressId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("address_id");
 
                             b1.Property<string>("CityName")
                                 .IsRequired()

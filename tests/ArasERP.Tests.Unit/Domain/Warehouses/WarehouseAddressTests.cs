@@ -5,10 +5,13 @@ namespace ArasERP.Tests.Unit.Domain.Warehouses;
 
 public class WarehouseAddressTests
 {
+    private static readonly Guid AddressId = Guid.NewGuid();
+
     [Fact]
     public void Create_WithValidData_SetsProperties()
     {
         var address = WarehouseAddress.Create(
+            AddressId,
             "Kebon Sirih",
             "Menteng",
             "Jakarta",
@@ -16,11 +19,28 @@ public class WarehouseAddressTests
             "10110"
         );
 
+        address.AddressId.Should().Be(AddressId);
         address.SubDistrictName.Should().Be("Kebon Sirih");
         address.DistrictName.Should().Be("Menteng");
         address.CityName.Should().Be("Jakarta");
         address.ProvinceName.Should().Be("DKI Jakarta");
         address.ZipCode.Should().Be("10110");
+    }
+
+    [Fact]
+    public void Create_WithEmptyAddressId_Throws()
+    {
+        var act = () =>
+            WarehouseAddress.Create(
+                Guid.Empty,
+                "Kebon Sirih",
+                "Menteng",
+                "Jakarta",
+                "DKI Jakarta",
+                "10110"
+            );
+
+        act.Should().Throw<ArgumentException>();
     }
 
     [Theory]
@@ -43,7 +63,15 @@ public class WarehouseAddressTests
         string? zipCode
     )
     {
-        var act = () => WarehouseAddress.Create(subDistrictName!, districtName!, cityName!, provinceName!, zipCode!);
+        var act = () =>
+            WarehouseAddress.Create(
+                AddressId,
+                subDistrictName!,
+                districtName!,
+                cityName!,
+                provinceName!,
+                zipCode!
+            );
 
         act.Should().Throw<ArgumentException>();
     }
@@ -51,8 +79,22 @@ public class WarehouseAddressTests
     [Fact]
     public void TwoAddresses_WithSameValues_AreEqual()
     {
-        var first = WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
-        var second = WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
+        var first = WarehouseAddress.Create(
+            AddressId,
+            "Kebon Sirih",
+            "Menteng",
+            "Jakarta",
+            "DKI Jakarta",
+            "10110"
+        );
+        var second = WarehouseAddress.Create(
+            AddressId,
+            "Kebon Sirih",
+            "Menteng",
+            "Jakarta",
+            "DKI Jakarta",
+            "10110"
+        );
 
         first.Should().Be(second);
     }
@@ -60,8 +102,22 @@ public class WarehouseAddressTests
     [Fact]
     public void TwoAddresses_WithDifferentValues_AreNotEqual()
     {
-        var first = WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
-        var second = WarehouseAddress.Create("Batununggal", "Bandung Kota", "Bandung", "Jawa Barat", "40111");
+        var first = WarehouseAddress.Create(
+            AddressId,
+            "Kebon Sirih",
+            "Menteng",
+            "Jakarta",
+            "DKI Jakarta",
+            "10110"
+        );
+        var second = WarehouseAddress.Create(
+            Guid.NewGuid(),
+            "Batununggal",
+            "Bandung Kota",
+            "Bandung",
+            "Jawa Barat",
+            "40111"
+        );
 
         first.Should().NotBe(second);
     }

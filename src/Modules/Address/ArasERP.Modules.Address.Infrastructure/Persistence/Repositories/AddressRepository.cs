@@ -17,14 +17,16 @@ public sealed class AddressRepository : IAddressRepository
 
     public async Task<Domain.Address?> GetByIdAsync(
         AddressId id,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         return await _dbContext.Addresses.FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<Domain.Address>> GetByCodesAsync(
         IReadOnlyCollection<(string DestinationCode, string OriginCode)> codePairs,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (codePairs.Count == 0)
         {
@@ -39,7 +41,8 @@ public sealed class AddressRepository : IAddressRepository
     }
 
     private static Expression<Func<Domain.Address, bool>> BuildCodePredicate(
-        IReadOnlyCollection<(string DestinationCode, string OriginCode)> codePairs)
+        IReadOnlyCollection<(string DestinationCode, string OriginCode)> codePairs
+    )
     {
         var parameter = Expression.Parameter(typeof(Domain.Address), "a");
         Expression? body = null;
@@ -49,10 +52,13 @@ public sealed class AddressRepository : IAddressRepository
             Expression condition = Expression.AndAlso(
                 Expression.Equal(
                     Expression.Property(parameter, nameof(Domain.Address.DestinationCode)),
-                    Expression.Constant(pair.DestinationCode)),
+                    Expression.Constant(pair.DestinationCode)
+                ),
                 Expression.Equal(
                     Expression.Property(parameter, nameof(Domain.Address.OriginCode)),
-                    Expression.Constant(pair.OriginCode)));
+                    Expression.Constant(pair.OriginCode)
+                )
+            );
 
             body = body is null ? condition : Expression.OrElse(body, condition);
         }
@@ -65,7 +71,8 @@ public sealed class AddressRepository : IAddressRepository
     public async Task<IReadOnlyList<Domain.Address>> SearchAsync(
         string keyword,
         int limit,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (string.IsNullOrWhiteSpace(keyword))
         {
@@ -73,10 +80,10 @@ public sealed class AddressRepository : IAddressRepository
         }
 
         return await _dbContext
-            .Addresses.Where(
-                a =>
-                    EF.Property<NpgsqlTsVector>(a, "SearchVector")
-                        .Matches(EF.Functions.PlainToTsQuery("simple", keyword)))
+            .Addresses.Where(a =>
+                EF.Property<NpgsqlTsVector>(a, "SearchVector")
+                    .Matches(EF.Functions.PlainToTsQuery("simple", keyword))
+            )
             .OrderBy(a => a.ProvinceName)
             .ThenBy(a => a.CityName)
             .ThenBy(a => a.DistrictName)
@@ -85,7 +92,10 @@ public sealed class AddressRepository : IAddressRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task AddAsync(Domain.Address address, CancellationToken cancellationToken = default)
+    public async Task AddAsync(
+        Domain.Address address,
+        CancellationToken cancellationToken = default
+    )
     {
         await _dbContext.Addresses.AddAsync(address, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -93,7 +103,8 @@ public sealed class AddressRepository : IAddressRepository
 
     public async Task UpsertRangeAsync(
         IReadOnlyCollection<Domain.Address> addresses,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (addresses.Count == 0)
         {
@@ -137,13 +148,15 @@ public sealed class AddressRepository : IAddressRepository
                     address.ExternalId,
                     now,
                 ],
-                cancellationToken);
+                cancellationToken
+            );
         }
     }
 
     public async Task AddRangeAsync(
         IReadOnlyCollection<Domain.Address> addresses,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (addresses.Count == 0)
         {
@@ -156,7 +169,8 @@ public sealed class AddressRepository : IAddressRepository
 
     public async Task UpdateAsync(
         Domain.Address address,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         _dbContext.Addresses.Update(address);
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -164,7 +178,8 @@ public sealed class AddressRepository : IAddressRepository
 
     public async Task UpdateRangeAsync(
         IReadOnlyCollection<Domain.Address> addresses,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (addresses.Count == 0)
         {

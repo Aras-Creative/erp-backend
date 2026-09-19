@@ -1,8 +1,6 @@
 using ArasERP.BuildingBlocks.Application;
 using ArasERP.Modules.Inventory.Application.Abstractions;
 using ArasERP.Modules.Inventory.Application.StockItems.List;
-using ArasERP.Modules.Inventory.Domain.StockItems;
-using ArasERP.Modules.Inventory.Domain.StockItems.ValueObjects;
 using FluentAssertions;
 using FluentValidation;
 using NSubstitute;
@@ -20,14 +18,23 @@ public class ListStockItemsQueryHandlerTests
         _sut = new ListStockItemsQueryHandler(_repository, _validator);
     }
 
-    private static StockItem CreateItem(string name = "Indomie Goreng", string sku = "SKU-001") =>
-        StockItem.Create(StockItemId.New(), name, sku, "Pcs", CostingMethod.Fifo);
-
     [Fact]
     public async Task Handle_ReturnsPagedStockItemsMappedToDtos()
     {
-        var item = CreateItem();
-        var paged = new PagedList<StockItem>([item], 1, 10, 1);
+        var dto = new ListStockItemsDto
+        {
+            Id = Guid.NewGuid(),
+            Sku = "SKU-001",
+            Name = "Indomie Goreng",
+            Unit = "Pcs",
+            IsActive = true,
+            WarehouseId = Guid.NewGuid(),
+            WarehouseName = "Gudang Utama",
+            OnHandQty = 100,
+            ReservedQty = 20,
+            AvailableQty = 80,
+        };
+        var paged = new PagedList<ListStockItemsDto>([dto], 1, 10, 1);
         _repository
             .ListAsync(Arg.Any<StockItemListFilter>(), Arg.Any<CancellationToken>())
             .Returns(paged);
@@ -37,20 +44,13 @@ public class ListStockItemsQueryHandlerTests
         result.TotalCount.Should().Be(1);
         result.Page.Should().Be(1);
         result.PageSize.Should().Be(10);
-        result.Items.Should().ContainSingle()
-            .Which.Should().BeEquivalentTo(new ListStockItemsDto
-            {
-                Id = item.Id.Value,
-                Sku = item.Sku,
-                Name = item.Name,
-                Unit = item.Unit,
-                IsActive = item.IsActive,
-            });
+        result.Items.Should().ContainSingle().Which.Should().BeEquivalentTo(dto);
     }
 
     [Fact]
     public async Task Handle_ForwardsFilterToRepository()
     {
+        var warehouseId = Guid.NewGuid();
         var query = new ListStockItemsQuery
         {
             Search = "Indomie",
@@ -59,8 +59,9 @@ public class ListStockItemsQueryHandlerTests
             PageSize = 25,
             OrderBy = "Name",
             Descending = true,
+            WarehouseId = warehouseId,
         };
-        var paged = new PagedList<StockItem>([], 2, 25, 0);
+        var paged = new PagedList<ListStockItemsDto>([], 2, 25, 0);
         _repository
             .ListAsync(Arg.Any<StockItemListFilter>(), Arg.Any<CancellationToken>())
             .Returns(paged);
@@ -76,7 +77,9 @@ public class ListStockItemsQueryHandlerTests
                     && f.Page == query.Page
                     && f.PageSize == query.PageSize
                     && f.OrderBy == query.OrderBy
-                    && f.Descending == query.Descending),
+                    && f.Descending == query.Descending
+                    && f.WarehouseId == warehouseId
+                ),
                 Arg.Any<CancellationToken>()
             );
     }
@@ -84,7 +87,7 @@ public class ListStockItemsQueryHandlerTests
     [Fact]
     public async Task Handle_WithNoStockItems_ReturnsEmptyPage()
     {
-        var paged = new PagedList<StockItem>([], 1, 10, 0);
+        var paged = new PagedList<ListStockItemsDto>([], 1, 10, 0);
         _repository
             .ListAsync(Arg.Any<StockItemListFilter>(), Arg.Any<CancellationToken>())
             .Returns(paged);

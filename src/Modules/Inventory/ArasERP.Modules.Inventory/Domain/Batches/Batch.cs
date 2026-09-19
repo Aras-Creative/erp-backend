@@ -13,8 +13,6 @@ public sealed class Batch : AggregateRoot<BatchId>
     public decimal RemainingQty { get; private set; }
     public decimal UnitCost { get; private set; }
     public BatchStatus Status { get; private set; } = null!;
-    public string ReceiptNumber { get; private set; } = null!;
-    public string? RecordedBy { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
@@ -24,9 +22,7 @@ public sealed class Batch : AggregateRoot<BatchId>
         WarehouseId warehouseId,
         DateTime receivedAt,
         decimal receivedQty,
-        decimal unitCost,
-        string receiptNumber,
-        string? recordedBy
+        decimal unitCost
     )
         : base(id)
     {
@@ -37,8 +33,6 @@ public sealed class Batch : AggregateRoot<BatchId>
         RemainingQty = receivedQty;
         UnitCost = unitCost;
         Status = BatchStatus.Active;
-        ReceiptNumber = receiptNumber;
-        RecordedBy = recordedBy;
         CreatedAt = DateTime.UtcNow;
     }
 
@@ -49,14 +43,11 @@ public sealed class Batch : AggregateRoot<BatchId>
         WarehouseId warehouseId,
         DateTime receivedAt,
         decimal receivedQty,
-        decimal unitCost,
-        string receiptNumber,
-        string? recordedBy = null
+        decimal unitCost
     )
     {
         ArgumentNullException.ThrowIfNull(itemId);
         ArgumentNullException.ThrowIfNull(warehouseId);
-        ArgumentException.ThrowIfNullOrWhiteSpace(receiptNumber);
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(receivedQty, 0);
         ArgumentOutOfRangeException.ThrowIfNegative(unitCost);
         if (receivedAt > DateTime.UtcNow)
@@ -65,16 +56,7 @@ public sealed class Batch : AggregateRoot<BatchId>
                 "Entry date cannot be in the future."
             );
 
-        return new Batch(
-            BatchId.New(),
-            itemId,
-            warehouseId,
-            receivedAt,
-            receivedQty,
-            unitCost,
-            receiptNumber.Trim(),
-            recordedBy
-        );
+        return new Batch(BatchId.New(), itemId, warehouseId, receivedAt, receivedQty, unitCost);
     }
 
     public void Consume(decimal qty, DateTime? updatedAt = null)

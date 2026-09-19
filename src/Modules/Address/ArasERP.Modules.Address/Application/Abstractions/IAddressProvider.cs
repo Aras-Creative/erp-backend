@@ -10,7 +10,8 @@ public interface IAddressProvider
 public sealed record AddressProviderResult(
     bool NotModified,
     string? Etag,
-    IReadOnlyList<Domain.Address> Items)
+    IReadOnlyList<Domain.Address> Items
+)
 {
     public static AddressProviderResult Unchanged() => new(true, null, []);
 }

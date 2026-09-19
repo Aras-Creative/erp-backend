@@ -17,6 +17,7 @@ public sealed class WarehouseRepository(InventoryDbContext dbContext) : IWarehou
     {
         WarehouseId = w.Id.Value,
         Name = w.Name,
+        IsActive = w.IsActive,
         PersonInCharge = new WarehouseDetailDto.PersonInChargeData
         {
             Name = w.PersonInCharge.Name,
@@ -24,6 +25,7 @@ public sealed class WarehouseRepository(InventoryDbContext dbContext) : IWarehou
         },
         Address = new WarehouseDetailDto.AddressData
         {
+            AddressId = w.Address.AddressId,
             SubDistrictName = w.Address.SubDistrictName,
             DistrictName = w.Address.DistrictName,
             CityName = w.Address.CityName,
@@ -58,7 +60,10 @@ public sealed class WarehouseRepository(InventoryDbContext dbContext) : IWarehou
         CancellationToken cancellationToken = default
     )
     {
-        return await dbContext.Warehouses.AnyAsync(w => w.Id == id, cancellationToken);
+        return await dbContext.Warehouses.AnyAsync(
+            w => w.Id == id && w.IsActive,
+            cancellationToken
+        );
     }
 
     public async Task<WarehouseDetailDto?> GetDetailAsync(
@@ -101,7 +106,7 @@ public sealed class WarehouseRepository(InventoryDbContext dbContext) : IWarehou
     )
     {
         return await dbContext
-            .Warehouses.Where(w => !w.IsDeleted)
+            .Warehouses.Where(w => !w.IsDeleted && w.IsActive)
             .OrderBy(w => w.Name)
             .Select(w => new WarehouseOptionDto(w.Id.Value, w.Name))
             .ToListAsync(cancellationToken);

@@ -114,7 +114,7 @@ public class LayerDependencyTests
     {
         var result = Types
             .InAssembly(
-                typeof(ArasERP.Modules.Inventory.Api.Warehouses.Endpoints.WarehousesEndpoints).Assembly
+                typeof(ArasERP.Modules.Inventory.Api.Endpoints.WarehousesEndpoints).Assembly
             )
             .That()
             .ResideInNamespaceStartingWith("ArasERP.Modules.Inventory.Api")

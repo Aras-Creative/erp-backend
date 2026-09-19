@@ -12,11 +12,18 @@ internal sealed class WarehouseConfiguration : IEntityTypeConfiguration<Warehous
 
         builder.HasKey(w => w.Id);
 
-        builder.Property(w => w.Id).HasColumnName("id").HasConversion(id => id.Value, value => new WarehouseId(value));
+        builder
+            .Property(w => w.Id)
+            .HasColumnName("id")
+            .HasConversion(id => id.Value, value => new WarehouseId(value));
 
         builder.Property(w => w.Name).HasColumnName("name").IsRequired().HasMaxLength(150);
 
         builder.HasIndex(w => w.Name).IsUnique();
+
+        builder.Property(w => w.IsActive).HasColumnName("is_active").IsRequired();
+
+        builder.HasIndex(w => w.IsActive);
 
         builder.Property(w => w.IsDeleted).HasColumnName("is_deleted").IsRequired();
 
@@ -45,6 +52,8 @@ internal sealed class WarehouseConfiguration : IEntityTypeConfiguration<Warehous
             w => w.Address,
             address =>
             {
+                address.Property(a => a.AddressId).HasColumnName("address_id").IsRequired();
+
                 address
                     .Property(a => a.SubDistrictName)
                     .HasColumnName("address_sub_district_name")
@@ -77,6 +86,9 @@ internal sealed class WarehouseConfiguration : IEntityTypeConfiguration<Warehous
             }
         );
 
-        builder.Property(w => w.FullAddressText).HasColumnName("full_address_text").HasMaxLength(500);
+        builder
+            .Property(w => w.FullAddressText)
+            .HasColumnName("full_address_text")
+            .HasMaxLength(500);
     }
 }

@@ -10,8 +10,17 @@ public class WarehouseTests
     private static WarehousePersonInCharge CreatePersonInCharge() =>
         WarehousePersonInCharge.Create("Budi", "08123456789");
 
+    private static readonly Guid AddressId = Guid.NewGuid();
+
     private static WarehouseAddress CreateAddress() =>
-        WarehouseAddress.Create("Kebon Sirih", "Menteng", "Jakarta", "DKI Jakarta", "10110");
+        WarehouseAddress.Create(
+            AddressId,
+            "Kebon Sirih",
+            "Menteng",
+            "Jakarta",
+            "DKI Jakarta",
+            "10110"
+        );
 
     [Fact]
     public void Create_WithValidData_SetsProperties()
@@ -28,6 +37,7 @@ public class WarehouseTests
         warehouse.Address.Should().BeEquivalentTo(CreateAddress());
         warehouse.FullAddressText.Should().Be("Sebelah pasar");
         warehouse.Id.Should().NotBeNull();
+        warehouse.IsActive.Should().BeTrue();
     }
 
     [Fact]
@@ -109,5 +119,37 @@ public class WarehouseTests
 
         warehouse.IsDeleted.Should().BeTrue();
         warehouse.DomainEvents.Count.Should().Be(eventCount);
+    }
+
+    [Fact]
+    public void ToggleStatus_WhenActive_DeactivatesAndRaisesEvent()
+    {
+        var warehouse = Warehouse.Create("Gudang Utama", CreatePersonInCharge(), CreateAddress());
+
+        warehouse.ToggleStatus();
+
+        warehouse.IsActive.Should().BeFalse();
+        warehouse
+            .DomainEvents.OfType<WarehouseStatusChangedDomainEvent>()
+            .Should()
+            .ContainSingle()
+            .Which.IsActive.Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public void ToggleStatus_WhenInactive_ActivatesAndRaisesEvent()
+    {
+        var warehouse = Warehouse.Create("Gudang Utama", CreatePersonInCharge(), CreateAddress());
+        warehouse.ToggleStatus();
+
+        warehouse.ToggleStatus();
+
+        warehouse.IsActive.Should().BeTrue();
+        warehouse
+            .DomainEvents.OfType<WarehouseStatusChangedDomainEvent>()
+            .Last()
+            .IsActive.Should()
+            .BeTrue();
     }
 }

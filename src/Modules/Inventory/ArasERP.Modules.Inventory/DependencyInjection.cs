@@ -1,11 +1,14 @@
 using ArasERP.BuildingBlocks.Application;
-using ArasERP.Modules.Inventory.Application.Batches.Receive;
+using ArasERP.Modules.Inventory.Application.Batches.Create;
 using ArasERP.Modules.Inventory.Application.StockItems.Create;
+using ArasERP.Modules.Inventory.Application.StockItems.List;
+using ArasERP.Modules.Inventory.Application.StockMovements.List;
 using ArasERP.Modules.Inventory.Application.Warehouses.Create;
 using ArasERP.Modules.Inventory.Application.Warehouses.Delete;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetById;
 using ArasERP.Modules.Inventory.Application.Warehouses.GetOptions;
 using ArasERP.Modules.Inventory.Application.Warehouses.List;
+using ArasERP.Modules.Inventory.Application.Warehouses.ToggleStatus;
 using ArasERP.Modules.Inventory.Application.Warehouses.Update;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +38,15 @@ public static class DependencyInjection
         >();
 
         services.AddScoped<
+            IValidator<ToggleWarehouseStatusCommand>,
+            ToggleWarehouseStatusCommandValidator
+        >();
+        services.AddScoped<
+            ICommandHandler<ToggleWarehouseStatusCommand>,
+            ToggleWarehouseStatusCommandHandler
+        >();
+
+        services.AddScoped<
             IQueryHandler<GetWarehouseOptionsQuery, IReadOnlyList<WarehouseOptionDto>>,
             GetWarehouseOptionsQueryHandler
         >();
@@ -50,10 +62,25 @@ public static class DependencyInjection
         >();
 
         services.AddScoped<IValidator<CreateStockItemCommand>, CreateStockItemValidator>();
-        services.AddScoped<ICommandHandler<CreateStockItemCommand>, CreateStockItemCommandHandler>();
+        services.AddScoped<
+            ICommandHandler<CreateStockItemCommand>,
+            CreateStockItemCommandHandler
+        >();
 
-        services.AddScoped<IValidator<ReceiveBatchCommand>, ReceiveBatchCommandValidator>();
-        services.AddScoped<ICommandHandler<ReceiveBatchCommand>, ReceiveBatchCommandHandler>();
+        services.AddScoped<IValidator<ListStockItemsQuery>, ListStockItemsQueryValidator>();
+        services.AddScoped<
+            IQueryHandler<ListStockItemsQuery, PagedList<ListStockItemsDto>>,
+            ListStockItemsQueryHandler
+        >();
+
+        services.AddScoped<IValidator<CreateBatchCommand>, CreateBatchCommandValidator>();
+        services.AddScoped<ICommandHandler<CreateBatchCommand>, CreateBatchCommandHandler>();
+
+        services.AddScoped<IValidator<ListStockMovementsQuery>, ListStockMovementsQueryValidator>();
+        services.AddScoped<
+            IQueryHandler<ListStockMovementsQuery, PagedList<ListStockMovementsDto>>,
+            ListStockMovementsQueryHandler
+        >();
 
         return services;
     }

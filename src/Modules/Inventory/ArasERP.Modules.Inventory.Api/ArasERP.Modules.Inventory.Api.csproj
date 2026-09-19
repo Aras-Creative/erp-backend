@@ -14,6 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\ArasERP.BuildingBlocks\ArasERP.BuildingBlocks.csproj" />
     <ProjectReference Include="..\ArasERP.Modules.Inventory\ArasERP.Modules.Inventory.csproj" />
-      <ProjectReference Include="..\..\AddressClient\ArasERP.Modules.AddressClient\ArasERP.Modules.AddressClient.csproj" />
+    <ProjectReference Include="..\..\AddressClient\ArasERP.Modules.AddressClient\ArasERP.Modules.AddressClient.csproj" />
   </ItemGroup>
 </Project>

@@ -8,9 +8,7 @@ public sealed class CreateWarehouseCommandValidator : AbstractValidator<CreateWa
     {
         RuleFor(x => x.Name).NotEmpty();
 
-        RuleFor(x => x.AddressId)
-            .NotEmpty()
-            .WithMessage("Address is required.");
+        RuleFor(x => x.AddressId).NotEmpty().WithMessage("Address is required.");
 
         RuleFor(x => x.PersonInCharge).NotNull();
 

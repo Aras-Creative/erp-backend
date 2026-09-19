@@ -11,4 +11,14 @@ public sealed class ListStockItemsDto
     public string Unit { get; init; } = string.Empty;
 
     public bool IsActive { get; init; }
+
+    public Guid? WarehouseId { get; init; }
+
+    public string? WarehouseName { get; init; }
+
+    public decimal OnHandQty { get; init; }
+
+    public decimal ReservedQty { get; init; }
+
+    public decimal AvailableQty { get; init; }
 }

@@ -16,7 +16,8 @@ public sealed class MengantarClient
     public MengantarClient(
         HttpClient httpClient,
         IOptions<IntegrationsOptions> options,
-        ILogger<MengantarClient> logger)
+        ILogger<MengantarClient> logger
+    )
     {
         _httpClient = httpClient;
         _logger = logger;
@@ -26,20 +27,24 @@ public sealed class MengantarClient
             ?? new ProviderOptions();
 
         _baseUrl = (providerOptions.BaseUrl ?? MengantarOptions.DefaultBaseUrl).TrimEnd('/');
-        _apiKey = providerOptions.ApiKey
+        _apiKey =
+            providerOptions.ApiKey
             ?? throw new InvalidOperationException(
                 "Mengantar API key is not configured. Set 'Integrations:Providers:Mengantar:ApiKey' "
-                + "or the 'Integrations__Providers__Mengantar__ApiKey' environment variable.");
+                    + "or the 'Integrations__Providers__Mengantar__ApiKey' environment variable."
+            );
     }
 
     public async Task<MengantarSearchResponse> SearchAddressAsync(
         string keyword,
         string? etag = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var uri = BuildUri(
             "address/search",
-            new Dictionary<string, string?> { ["keyword"] = keyword });
+            new Dictionary<string, string?> { ["keyword"] = keyword }
+        );
 
         using var request = new HttpRequestMessage(HttpMethod.Get, uri);
         if (!string.IsNullOrWhiteSpace(etag))
@@ -50,12 +55,15 @@ public sealed class MengantarClient
         using var response = await _httpClient.SendAsync(
             request,
             HttpCompletionOption.ResponseHeadersRead,
-            cancellationToken);
+            cancellationToken
+        );
 
         if (response.StatusCode == HttpStatusCode.NotModified)
         {
             _logger.LogInformation(
-                "Mengantar address search for '{Keyword}' is unchanged (304).", keyword);
+                "Mengantar address search for '{Keyword}' is unchanged (304).",
+                keyword
+            );
             return new MengantarSearchResponse { NotModified = true };
         }
 
@@ -63,7 +71,8 @@ public sealed class MengantarClient
 
         var envelope = await response.Content.ReadFromJsonAsync<MengantarSearchEnvelope>(
             MengantarJson.Options,
-            cancellationToken);
+            cancellationToken
+        );
 
         var items = (envelope?.Data ?? [])
             .Where(d => d is not null && !string.IsNullOrWhiteSpace(d.Id))
@@ -73,7 +82,7 @@ public sealed class MengantarClient
         {
             NotModified = false,
             Etag = response.Headers.ETag?.Tag,
-            Items = items
+            Items = items,
         };
     }
 
@@ -89,7 +98,8 @@ public sealed class MengantarClient
                     query
                         .Where(p => p.Value is not null)
                         .Select(p =>
-                            $"{Uri.EscapeDataString(p.Key)}={Uri.EscapeDataString(p.Value!)}")
+                            $"{Uri.EscapeDataString(p.Key)}={Uri.EscapeDataString(p.Value!)}"
+                        )
                 );
         }
 
@@ -98,7 +108,8 @@ public sealed class MengantarClient
 
     private static async Task EnsureSuccessAsync(
         HttpResponseMessage response,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         if (response.IsSuccessStatusCode)
         {

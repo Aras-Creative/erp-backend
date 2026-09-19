@@ -10,19 +10,13 @@ namespace ArasERP.Modules.Address.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "Id",
-                table: "addresses",
-                newName: "id");
+            migrationBuilder.RenameColumn(name: "Id", table: "addresses", newName: "id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "id",
-                table: "addresses",
-                newName: "Id");
+            migrationBuilder.RenameColumn(name: "id", table: "addresses", newName: "Id");
         }
     }
 }
