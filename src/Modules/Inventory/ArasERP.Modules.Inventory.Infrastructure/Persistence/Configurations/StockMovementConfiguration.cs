@@ -53,6 +53,19 @@ internal sealed class StockMovementConfiguration : IEntityTypeConfiguration<Stoc
             .HasPrecision(18, 4);
 
         builder
+            .Property(m => m.UnitCost)
+            .HasColumnName("unit_cost")
+            .IsRequired()
+            .HasPrecision(18, 4);
+
+        builder
+            .Property(m => m.Currency)
+            .HasColumnName("currency")
+            .HasMaxLength(3)
+            .IsRequired()
+            .HasDefaultValue("IDR");
+
+        builder
             .Property(m => m.SourceType)
             .HasColumnName("source_type")
             .IsRequired()

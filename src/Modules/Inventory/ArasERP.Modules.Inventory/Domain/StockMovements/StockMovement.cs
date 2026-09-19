@@ -12,6 +12,8 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
     public BatchId? BatchId { get; private set; }
     public Direction Direction { get; private set; } = null!;
     public decimal Quantity { get; private set; }
+    public decimal UnitCost { get; private set; }
+    public string Currency { get; private set; } = null!;
     public SourceType SourceType { get; private set; } = null!;
     public Guid? SourceReferenceId { get; private set; }
     public string? ExternalReferenceNo { get; private set; }
@@ -20,12 +22,16 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
     public Guid RecordedBy { get; private set; }
     public string? ReceivedBy { get; private set; }
 
+    public decimal Total => Quantity * UnitCost;
+
     private StockMovement(
         StockMovementId id,
         StockItemId itemId,
         WarehouseId warehouseId,
         Direction direction,
         decimal quantity,
+        decimal unitCost,
+        string currency,
         SourceType sourceType,
         Guid? sourceReferenceId,
         string? externalReferenceNo,
@@ -40,6 +46,8 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
         WarehouseId = warehouseId;
         Direction = direction;
         Quantity = quantity;
+        UnitCost = unitCost;
+        Currency = currency;
         SourceType = sourceType;
         SourceReferenceId = sourceReferenceId;
         ExternalReferenceNo = externalReferenceNo;
@@ -52,12 +60,20 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
 
     private StockMovement() { }
 
+    /// <summary>
+    /// Creates a stock movement and snapshots the unit cost and currency at the time of the event
+    /// so historical value never changes with later price corrections.
+    /// For movements that reference a batch, <paramref name="unitCost"/> must equal the batch's
+    /// <see cref="Batches.Batch.UnitCost"/>; callers are responsible for passing the batch cost.
+    /// </summary>
     public static StockMovement Create(
         StockItemId itemId,
         WarehouseId warehouseId,
         Direction direction,
         decimal quantity,
         SourceType sourceType,
+        decimal unitCost,
+        string currency = "IDR",
         Guid? sourceReferenceId = null,
         string? externalReferenceNo = null,
         BatchId? batchId = null,
@@ -71,6 +87,7 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
         ArgumentNullException.ThrowIfNull(direction);
         ArgumentNullException.ThrowIfNull(sourceType);
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(quantity, 0);
+        ArgumentOutOfRangeException.ThrowIfNegative(unitCost);
 
         return new StockMovement(
             StockMovementId.New(),
@@ -78,6 +95,8 @@ public sealed class StockMovement : AggregateRoot<StockMovementId>
             warehouseId,
             direction,
             quantity,
+            unitCost,
+            (currency ?? "IDR").Trim().ToUpperInvariant(),
             sourceType,
             sourceReferenceId,
             externalReferenceNo?.Trim(),
